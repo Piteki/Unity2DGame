@@ -19,7 +19,7 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField] float _moveAcceleration = 1.0f;
 	[SerializeField] float _AirMoveAcceleration = 0.2f;
 	[SerializeField] float _JumpSpeed = 2;
-	[SerializeField] float _GroundCastDistance = 0.1f;
+	[SerializeField] float _GroundCastDistance = 0.05f;
 
 	[SerializeField] BoxCollider2D _BoxCollider;
 	[SerializeField] SpriteRenderer _SpriteRenderer;
