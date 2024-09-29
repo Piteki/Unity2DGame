@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 4513848584174826658}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2, y: 0.6, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -118,10 +118,10 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.08, y: -0.05}
+  m_Offset: {x: 0, y: 0.15}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.38, y: 0}
     oldSize: {x: 0.69, y: 0.44}
     newSize: {x: 0.69, y: 0.44}
     adaptiveTilingThreshold: 0.5
@@ -129,7 +129,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.16, y: 0.35}
+  m_Size: {x: 0.12, y: 0.33}
   m_EdgeRadius: 0
 --- !u!95 &4641373296735236442
 Animator:
@@ -228,6 +228,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 5
   _moveAcceleration: 1
+  _AirMoveAcceleration: 0.2
+  _JumpSpeed: 3
+  _BoxCollider: {fileID: 432338743337092174}
+  _SpriteRenderer: {fileID: 7598988403906053334}
+  _Animator: {fileID: 4641373296735236442}
   _isGrounded: 0
 --- !u!114 &7967753349930129038
 MonoBehaviour:
@@ -258,7 +263,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8176303590973039350}
         m_TargetAssemblyTypeName: CharacterController2D, Assembly-CSharp
-        m_MethodName: OnMove
+        m_MethodName: OnMoveInput
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -271,7 +276,19 @@ MonoBehaviour:
     m_ActionId: 9b877e02-2cb9-498b-a3e3-86e142676ede
     m_ActionName: Player/Move
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8176303590973039350}
+        m_TargetAssemblyTypeName: CharacterController2D, Assembly-CSharp
+        m_MethodName: OnJumpInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: d14bb4eb-5437-40ac-a8fa-fc4ae034fbba
     m_ActionName: Player/Jump[/Keyboard/space,/DualShock4GamepadHID/buttonNorth]
   m_NeverAutoSwitchControlSchemes: 0
