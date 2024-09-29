@@ -229,7 +229,8 @@ MonoBehaviour:
   _moveSpeed: 5
   _moveAcceleration: 1
   _AirMoveAcceleration: 0.2
-  _JumpSpeed: 3
+  _JumpSpeed: 6
+  _GroundCastDistance: 0.05
   _BoxCollider: {fileID: 432338743337092174}
   _SpriteRenderer: {fileID: 7598988403906053334}
   _Animator: {fileID: 4641373296735236442}

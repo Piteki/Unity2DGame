@@ -19,6 +19,7 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField] float _moveAcceleration = 1.0f;
 	[SerializeField] float _AirMoveAcceleration = 0.2f;
 	[SerializeField] float _JumpSpeed = 2;
+	[SerializeField] float _GroundCastDistance = 0.1f;
 
 	[SerializeField] BoxCollider2D _BoxCollider;
 	[SerializeField] SpriteRenderer _SpriteRenderer;
@@ -147,11 +148,9 @@ public class CharacterController2D : MonoBehaviour
 		// TODO
 		int LayerIndex_Ground = LayerMask.GetMask( LayerName_Ground );
 
-		var boxSize = _BoxCollider != null ? _BoxCollider.size : new Vector2( 1, 0.1f );
-		boxSize.y = 0.05f;
 		var downDir = Vector2.down;
-		float distance = 0.1f;
-		int hitCount = Physics2D.BoxCastNonAlloc( transform.position, boxSize, 0, downDir, mRaycastHit2Ds, distance, LayerIndex_Ground );
+		var rect = GetCheckGroundBox();
+		int hitCount = Physics2D.BoxCastNonAlloc( rect.position, rect.size, 0, downDir, mRaycastHit2Ds, _GroundCastDistance, LayerIndex_Ground );
 		
 		//for( int i = 0; i < hitCount; ++i )
 		//{
@@ -163,6 +162,21 @@ public class CharacterController2D : MonoBehaviour
 			IsJumping = false;
 		}
 		_isGrounded = IsGrounded;
+	}
+
+	public Rect GetCheckGroundBox()
+	{
+		if( _BoxCollider == null )
+		{
+			var pos = transform.position;
+			return new Rect( new Vector2( pos.x, pos.y ) + _BoxCollider.offset, Vector2.one );
+		}
+		else
+		{
+			var boxSize = _BoxCollider.size * _BoxCollider.transform.lossyScale;
+			var pos = _BoxCollider.transform.TransformPoint( _BoxCollider.offset );
+			return new Rect( new Vector2( pos.x, pos.y ), boxSize );
+		}
 	}
 
 	public void OnMoveInput(InputAction.CallbackContext context)
@@ -200,5 +214,8 @@ public class CharacterController2D : MonoBehaviour
 	public void OnDrawGizmos()
 	{
 		Gizmos.DrawRay( transform.position, new Vector3( mMoveInput.x, mMoveInput.y, 0  ) );
+
+		var rect = GetCheckGroundBox();
+		Gizmos.DrawWireCube( new Vector3( rect.position.x, rect.position.y, transform.position.z ), new Vector3( rect.size.x, rect.size.y, 0.01f ) );
 	}
 }
