@@ -59,7 +59,7 @@ public class CharacterController2D : MonoBehaviour
 	{
 		float fixedDeltaDiv = 1 / Time.fixedDeltaTime;
 
-		var velocity = mRigidbody.velocity;
+		var velocity = mRigidbody.linearVelocity;
 		var force = Vector2.zero;
 		if( IsMoving )
 		{
@@ -117,7 +117,7 @@ public class CharacterController2D : MonoBehaviour
 	{
 		if( _Animator == null ){ return; }
 
-		var velocity = mRigidbody.velocity;
+		var velocity = mRigidbody.linearVelocity;
 		
 		_Animator.SetBool( AnimatorHash_IsMoving, IsMoving );
 		_Animator.SetBool( AnimatorHash_IsJumping, IsJumping );
