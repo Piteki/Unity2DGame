@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: dea4fb18ddba6a74188b2744a3b32f97
+AssetOrigin:
+  serializedVersion: 1
+  productId: 216237
+  packageName: 2D Forest sprite pack.
+  packageVersion: 1.0
+  assetPath: Assets/Forest sprite pack/Sprites/new tree leafs ellow.png
+  uploadId: 487926
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -45,7 +52,7 @@ TextureImporter:
       213: 21300026
     second: new tree leafs ellow_13
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -109,7 +116,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 1
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 8192
     resizeAlgorithm: 0
@@ -122,7 +129,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 8192
     resizeAlgorithm: 0
@@ -149,6 +156,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -850.0175, y: 511.5}
         - {x: -1031, y: 315.54004}
@@ -181,6 +189,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -323.7948, y: 383}
         - {x: -410.5, y: 169.79274}
@@ -209,6 +218,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -393.84558, y: 440.5}
         - {x: -436, y: 349.42685}
@@ -238,6 +248,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 866.4473, y: 635.5}
         - {x: -518.4159, y: 635.5}
@@ -269,6 +280,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 921.5, y: -176.45422}
         - {x: 921.5, y: 123.28955}
@@ -302,6 +314,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 29.425882, y: 331}
         - {x: -335.5, y: 82.494484}
@@ -332,6 +345,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -212.82935, y: -577.5}
         - {x: 370.16943, y: -577.5}
@@ -361,6 +375,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 29.459229, y: 377}
         - {x: -364.90024, y: 377}
@@ -389,6 +404,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -76.52051, y: -415.2317}
         - {x: 345.90814, y: -273.11774}
@@ -424,6 +440,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 512.74023, y: 370.18832}
         - {x: 407.95508, y: 505}
@@ -457,6 +474,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 541.06836, y: -362.07535}
         - {x: 569.3887, y: -390.3956}
@@ -502,6 +520,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 549, y: -270.3705}
         - {x: 549, y: 225.2339}
@@ -536,6 +555,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 676, y: -205.01605}
         - {x: 672.9995, y: 73.479004}
@@ -570,6 +590,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -228.12094, y: 409}
         - {x: -440.92725, y: 301.03162}
@@ -591,6 +612,7 @@ TextureImporter:
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 
@@ -600,6 +622,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
       new tree leafs ellow_0: 21300000
       new tree leafs ellow_1: 21300002

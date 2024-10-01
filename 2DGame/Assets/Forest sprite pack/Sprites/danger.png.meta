@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 3af4957675b28264588522d33802222f
+AssetOrigin:
+  serializedVersion: 1
+  productId: 216237
+  packageName: 2D Forest sprite pack.
+  packageVersion: 1.0
+  assetPath: Assets/Forest sprite pack/Sprites/danger.png
+  uploadId: 487926
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -24,7 +31,7 @@ TextureImporter:
       213: 21300012
     second: danger_6
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 1
@@ -88,7 +95,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 1
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -101,7 +108,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 1
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -128,6 +135,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 21, y: 8, z: 21, w: 20}
+      customData: 
       outline:
       - - {x: -68.5, y: 71.5}
         - {x: -71.5, y: 67.5}
@@ -157,6 +165,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -68.5, y: 71.5}
         - {x: -71.5, y: 68.5}
@@ -184,6 +193,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -68.5, y: 71.5}
         - {x: -71.5, y: 68.5}
@@ -211,6 +221,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 10.5, y: -105.5}
         - {x: 83.5, y: -29.5}
@@ -244,6 +255,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 202, y: 37.5}
         - {x: 170, y: 70.5}
@@ -295,6 +307,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 100, y: 0, z: 98, w: 0}
+      customData: 
       outline:
       - - {x: 119.5, y: -93.5}
         - {x: 207.5, y: -69.5}
@@ -348,6 +361,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -115.5, y: 112.5}
         - {x: -115.5, y: -62.5}
@@ -365,6 +379,7 @@ TextureImporter:
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 0ab481eec5b023c47a3ddf2cc55fa92a
@@ -374,6 +389,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
       danger_0: 21300000
       danger_1: 21300002

@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 0bf7fee3c314bad4e9db67eef7fa81ea
+AssetOrigin:
+  serializedVersion: 1
+  productId: 216237
+  packageName: 2D Forest sprite pack.
+  packageVersion: 1.0
+  assetPath: Assets/Forest sprite pack/Sprites/background grass.png
+  uploadId: 487926
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -30,7 +37,7 @@ TextureImporter:
       213: 21300016
     second: background grass_8
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -94,7 +101,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 1
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -107,7 +114,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 1
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -134,6 +141,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -58.5, y: 155}
         - {x: -109.5, y: 62}
@@ -166,6 +174,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 67, y: 45.5}
         - {x: 49, y: 102.5}
@@ -195,6 +204,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 40, y: 68}
         - {x: 26, y: 80}
@@ -225,6 +235,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 9.5, y: 46}
         - {x: -27.767334, y: 46}
@@ -254,6 +265,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 12, y: 57}
         - {x: -38, y: 57}
@@ -284,6 +296,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: 28.5, y: -18}
         - {x: 81.5, y: -24}
@@ -326,6 +339,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -91.5, y: -47}
         - {x: -66.283905, y: -78.20947}
@@ -354,6 +368,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -97, y: 41.5}
         - {x: -83, y: -41.5}
@@ -379,6 +394,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -44.5, y: 22}
         - {x: -44.5, y: -21}
@@ -395,6 +411,7 @@ TextureImporter:
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 
@@ -404,6 +421,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
       background grass_0: 21300000
       background grass_1: 21300002

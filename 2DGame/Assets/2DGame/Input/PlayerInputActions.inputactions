@@ -18,7 +18,7 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "d14bb4eb-5437-40ac-a8fa-fc4ae034fbba",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

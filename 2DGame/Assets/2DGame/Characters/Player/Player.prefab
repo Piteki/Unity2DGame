@@ -166,9 +166,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2718716845799535251}
-  - component: {fileID: 3229409338524102680}
-  - component: {fileID: 8176303590973039350}
+  - component: {fileID: 319707545041514057}
   - component: {fileID: 7967753349930129038}
+  - component: {fileID: 3229409338524102680}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -192,34 +192,7 @@ Transform:
   - {fileID: 2102298401846533418}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &3229409338524102680
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7371448074757889978}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
---- !u!114 &8176303590973039350
+--- !u!114 &319707545041514057
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,13 +201,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7371448074757889978}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ec80c488e755c34db1390538ff66445, type: 3}
+  m_Script: {fileID: 11500000, guid: 97ed679236a9a724b9514b9b06e8ef61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 5
   _moveAcceleration: 1
   _AirMoveAcceleration: 0.2
-  _JumpSpeed: 6
+  _JumpSpeed: 5
   _GroundCastDistance: 0.05
   _BoxCollider: {fileID: 432338743337092174}
   _SpriteRenderer: {fileID: 7598988403906053334}
@@ -267,7 +240,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8176303590973039350}
+      - m_Target: {fileID: 319707545041514057}
         m_TargetAssemblyTypeName: CharacterController2D, Assembly-CSharp
         m_MethodName: OnMoveInput
         m_Mode: 0
@@ -283,7 +256,7 @@ MonoBehaviour:
     m_ActionName: Player/Move
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8176303590973039350}
+      - m_Target: {fileID: 319707545041514057}
         m_TargetAssemblyTypeName: CharacterController2D, Assembly-CSharp
         m_MethodName: OnJumpInput
         m_Mode: 0
@@ -302,3 +275,30 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!50 &3229409338524102680
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371448074757889978}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4

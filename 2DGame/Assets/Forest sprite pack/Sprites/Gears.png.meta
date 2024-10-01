@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: a51fda767a358904f8eaca980c07790b
+AssetOrigin:
+  serializedVersion: 1
+  productId: 216237
+  packageName: 2D Forest sprite pack.
+  packageVersion: 1.0
+  assetPath: Assets/Forest sprite pack/Sprites/Gears.png
+  uploadId: 487926
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -12,7 +19,7 @@ TextureImporter:
       213: 21300004
     second: lift_3
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -76,7 +83,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 1
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -89,7 +96,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 1
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -116,6 +123,7 @@ TextureImporter:
       alignment: 9
       pivot: {x: 0.5020338, y: 0.82860154}
       border: {x: 44, y: 0, z: 34, w: 0}
+      customData: 
       outline:
       - - {x: -22, y: 56}
         - {x: -156, y: 56}
@@ -145,6 +153,7 @@ TextureImporter:
       alignment: 9
       pivot: {x: 0.49999973, y: 0.9242952}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -12.5, y: 164.5}
         - {x: -27.5, y: 150.5}
@@ -172,6 +181,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline:
       - - {x: -33.5, y: 33.5}
         - {x: -33.5, y: -33.5}
@@ -188,6 +198,7 @@ TextureImporter:
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 
@@ -197,6 +208,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
       lift_0: 21300000
       lift_2: 21300002
