@@ -103,10 +103,14 @@ namespace Ptk
 
 			if( mJumpInput )
 			{
-				if( IsGrounded )
-				{
+				if( IsGrounded 
+				 && !IsJumping
+				){
+					mJumpInput = false;
+
 					force.y = _JumpSpeed * fixedDeltaDiv;
 					IsJumping = true;
+					_Animator.SetTrigger( AnimatorHash_IsJumping );
 				}
 			}
 
@@ -137,16 +141,6 @@ namespace Ptk
 			var velocity = mRigidbody.linearVelocity;
 		
 			_Animator.SetBool( AnimatorHash_IsMoving, IsMoving );
-			_Animator.SetBool( AnimatorHash_IsJumping, IsJumping );
-			if( IsJumping )
-			{
-				_Animator.SetTrigger( AnimatorHash_IsJumping );
-				IsJumping = false;
-			}
-			else
-			{
-				_Animator.ResetTrigger( AnimatorHash_IsJumping );
-			}
 		
 			_Animator.SetFloat( AnimatorHash_MoveSpeed, Mathf.Abs(velocity.x) );
 			_Animator.SetFloat( AnimatorHash_VelocityX, velocity.x );
@@ -177,6 +171,7 @@ namespace Ptk
 			if( IsGrounded )
 			{
 				IsJumping = false;
+				_Animator.ResetTrigger( AnimatorHash_IsJumping );
 			}
 		}
 
@@ -216,9 +211,12 @@ namespace Ptk
 
 		public void OnJumpInput(InputAction.CallbackContext context)
 		{
-			if (context.started)
+			if (context.performed)
 			{
-				mJumpInput = true;
+				if( !IsJumping )
+				{
+					mJumpInput = true;
+				}
 			}
 			else if (context.canceled)
 			{
