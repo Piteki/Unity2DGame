@@ -204,17 +204,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97ed679236a9a724b9514b9b06e8ef61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _BoxCollider: {fileID: 432338743337092174}
+  _SpriteRenderer: {fileID: 7598988403906053334}
+  _Animator: {fileID: 4641373296735236442}
   _moveSpeed: 5
   _moveAcceleration: 1
   _AirMoveAcceleration: 0.2
   _JumpSpeed: 5
   _GroundCastDistance: 0.05
-  _BrakeAcceleration: 0.2
-  _AirBrakeAcceleration: 0.02
+  _BrakeAcceleration: 0.5
+  _AirBrakeAcceleration: 0.1
   _MoveStopSpeedThreshold: 0.01
-  _BoxCollider: {fileID: 432338743337092174}
-  _SpriteRenderer: {fileID: 7598988403906053334}
-  _Animator: {fileID: 4641373296735236442}
 --- !u!114 &7967753349930129038
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -21,18 +21,18 @@ namespace Ptk
 		static public int AnimatorHash_VelocityY = Animator.StringToHash("VelocityY");
 		static public int AnimatorHash_IsGrounded = Animator.StringToHash("IsGrounded");
 
+		[SerializeField] BoxCollider2D _BoxCollider;
+		[SerializeField] SpriteRenderer _SpriteRenderer;
+		[SerializeField] Animator _Animator;
+
 		[SerializeField] float _moveSpeed = 5;
 		[SerializeField] float _moveAcceleration = 1.0f;
 		[SerializeField] float _AirMoveAcceleration = 0.2f;
-		[SerializeField] float _JumpSpeed = 2;
+		[SerializeField] float _JumpSpeed = 5;
 		[SerializeField] float _GroundCastDistance = 0.05f;
 		[SerializeField] float _BrakeAcceleration = 0.5f;
 		[SerializeField] float _AirBrakeAcceleration = 0.1f;
 		[SerializeField] float _MoveStopSpeedThreshold = 0.01f;
-
-		[SerializeField] BoxCollider2D _BoxCollider;
-		[SerializeField] SpriteRenderer _SpriteRenderer;
-		[SerializeField] Animator _Animator;
 
 
 		private Vector2 mMoveInput;
@@ -245,10 +245,14 @@ namespace Ptk
 				base.OnInspectorGUI();
 
 				var chara = target as CharacterController2D;
-
 				if( chara == null ) { return; }
 
 				EditorGUILayout.LabelField( $"IsGrounded : {chara.IsGrounded}");
+				if( chara.mRigidbody != null )
+				{
+					EditorGUILayout.LabelField( $"VelocityX : {chara.mRigidbody.linearVelocityX}");
+					EditorGUILayout.LabelField( $"VelocityY : {chara.mRigidbody.linearVelocityY}");
+				}
 				
 			}
 		}
