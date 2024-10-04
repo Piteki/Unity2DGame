@@ -166,6 +166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2718716845799535251}
+  - component: {fileID: 4995924308116066867}
   - component: {fileID: 319707545041514057}
   - component: {fileID: 7967753349930129038}
   - component: {fileID: 3229409338524102680}
@@ -192,6 +193,20 @@ Transform:
   - {fileID: 2102298401846533418}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4995924308116066867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371448074757889978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a76e3ad82a26913438ede6be0f62193c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Abilities:
+  - {fileID: 11400000, guid: 5e8261cfb5bc3064ba4f50c9a925b677, type: 2}
 --- !u!114 &319707545041514057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,14 +222,30 @@ MonoBehaviour:
   _BoxCollider: {fileID: 432338743337092174}
   _SpriteRenderer: {fileID: 7598988403906053334}
   _Animator: {fileID: 4641373296735236442}
+  _AbilitySystem: {fileID: 4995924308116066867}
   _moveSpeed: 5
   _moveAcceleration: 1
   _AirMoveAcceleration: 0.2
   _JumpSpeed: 5
-  _GroundCastDistance: 0.05
+  _JumpCountLimit: 2
+  _IgnoreGroundedWhenFirstJump: 0
   _BrakeAcceleration: 0.5
   _AirBrakeAcceleration: 0.1
   _MoveStopSpeedThreshold: 0.01
+  _CheckGroudedContactFilter:
+    useTriggers: 0
+    useLayerMask: 1
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 1
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 64
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 44
+    maxNormalAngle: 136
 --- !u!114 &7967753349930129038
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,7 +1,8 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Ptk.AbilitySystems;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,36 +13,50 @@ namespace Ptk
 	[RequireComponent(typeof(Rigidbody2D))]
 	public class CharacterController2D : MonoBehaviour
 	{
-		static public string LayerName_Ground = "Ground";
+		static public readonly int AnimatorHash_IsMoving = Animator.StringToHash("IsMoving");
+		static public readonly int AnimatorHash_IsJumping = Animator.StringToHash("IsJumping");
+		static public readonly int AnimatorHash_MoveSpeed = Animator.StringToHash("MoveSpeed");
+		static public readonly int AnimatorHash_VelocityX = Animator.StringToHash("VelocityX");
+		static public readonly int AnimatorHash_VelocityY = Animator.StringToHash("VelocityY");
+		static public readonly int AnimatorHash_IsGrounded = Animator.StringToHash("IsGrounded");
 
-		static public int AnimatorHash_IsMoving = Animator.StringToHash("IsMoving");
-		static public int AnimatorHash_IsJumping = Animator.StringToHash("IsJumping");
-		static public int AnimatorHash_MoveSpeed = Animator.StringToHash("MoveSpeed");
-		static public int AnimatorHash_VelocityX = Animator.StringToHash("VelocityX");
-		static public int AnimatorHash_VelocityY = Animator.StringToHash("VelocityY");
-		static public int AnimatorHash_IsGrounded = Animator.StringToHash("IsGrounded");
+		static public readonly float GroudedCheckIgnoreTimeAfterJump = 0.1f;
 
 		[SerializeField] BoxCollider2D _BoxCollider;
 		[SerializeField] SpriteRenderer _SpriteRenderer;
 		[SerializeField] Animator _Animator;
+		[SerializeField] AbilitySystem _AbilitySystem;
 
 		[SerializeField] float _moveSpeed = 5;
 		[SerializeField] float _moveAcceleration = 1.0f;
 		[SerializeField] float _AirMoveAcceleration = 0.2f;
 		[SerializeField] float _JumpSpeed = 5;
-		[SerializeField] float _GroundCastDistance = 0.05f;
+		[SerializeField] int _JumpCountLimit = 1;
+		[SerializeField] bool _IgnoreGroundedWhenFirstJump = false;
 		[SerializeField] float _BrakeAcceleration = 0.5f;
 		[SerializeField] float _AirBrakeAcceleration = 0.1f;
 		[SerializeField] float _MoveStopSpeedThreshold = 0.01f;
 
+		[SerializeField] ContactFilter2D _CheckGroudedContactFilter = new()
+		{
+			useNormalAngle = true,
+			minNormalAngle =  44.0f,
+			maxNormalAngle = 136.0f,
+		};
+
 
 		private Vector2 mMoveInput;
-		private bool mJumpInput;
+
 		private Rigidbody2D mRigidbody;
 		private RaycastHit2D[] mRaycastHit2Ds = new RaycastHit2D[10];
 
+		private float mJumpStartTime;
+
+		public AbilitySystem  AbilitySystem => _AbilitySystem;
 		public bool IsMoving { get; private set; }
-		public bool IsJumping { get; private set; }
+		public bool CanJump => CheckCanJump();
+		public bool IsJumping => 0 < JumpCount;
+		public int JumpCount { get; private set; }
 		public bool IsGrounded { get; private set; }
 
 		void Start()
@@ -59,12 +74,22 @@ namespace Ptk
 			{
 				_Animator = GetComponentInChildren<Animator>();
 			}
+			if( _AbilitySystem == null )
+			{
+				_AbilitySystem = GetComponent<AbilitySystem>();
+			}
+			
 		
 		}
 
 		void FixedUpdate()
 		{
-			float fixedDeltaDiv = 1 / Time.fixedDeltaTime;
+			UpdateMove();
+		}
+
+		protected void UpdateMove()
+		{
+			//float fixedDeltaDiv = 1 / Time.fixedDeltaTime;
 
 			var velocity = mRigidbody.linearVelocity;
 			var force = Vector2.zero;
@@ -84,7 +109,7 @@ namespace Ptk
 				{
 					addSpd = 0;
 				}
-				force.x = addSpd * fixedDeltaDiv;
+				force.x = addSpd;// * fixedDeltaDiv;
 			}
 			else
 			{
@@ -93,7 +118,7 @@ namespace Ptk
 				float speed = Mathf.Abs(velocity.x);
 				if(  _MoveStopSpeedThreshold < speed )
 				{
-					force.x = brakeDir * Mathf.Min( speed, brakeAcc ) * fixedDeltaDiv;
+					force.x = brakeDir * Mathf.Min( speed, brakeAcc );// * fixedDeltaDiv;
 				}
 				else
 				{
@@ -101,21 +126,49 @@ namespace Ptk
 				}
 			}
 
-			if( mJumpInput )
-			{
-				if( IsGrounded 
-				 && !IsJumping
-				){
-					mJumpInput = false;
+			mRigidbody.AddForce( force, ForceMode2D.Impulse );
+		}
 
-					force.y = _JumpSpeed * fixedDeltaDiv;
-					IsJumping = true;
-					_Animator.SetTrigger( AnimatorHash_IsJumping );
-				}
-			}
 
-			mRigidbody.AddForce( force );
+		public virtual bool CheckCanJump()
+		{
+			if( _JumpCountLimit <= JumpCount ) { return false; }
+			if( !_IgnoreGroundedWhenFirstJump
+			 && !IsJumping
+			 && !IsGrounded
+			){ return false; }
 
+			return true;
+		}
+
+		/// <summary>
+		/// Jump 実行
+		/// </summary>
+		/// <returns></returns>
+		public virtual bool DoJump()
+		{
+			if( mRigidbody == null ){ return false; }
+
+			if( !CanJump ) { return false; }
+
+			++JumpCount;
+			// Jump 開始時間
+			mJumpStartTime = Time.time;
+
+			float addSpeedY = Mathf.Max( 0, _JumpSpeed - mRigidbody.linearVelocityY );
+			mRigidbody.linearVelocityY += addSpeedY;
+			_Animator.SetTrigger( AnimatorHash_IsJumping );
+
+			return true;
+		}
+
+		/// <summary>
+		/// Jump 状態リセット
+		/// </summary>
+		protected void ResetJump()
+		{
+			JumpCount = 0;
+			_Animator.ResetTrigger( AnimatorHash_IsJumping );
 		}
 
 		private void Update()
@@ -138,7 +191,7 @@ namespace Ptk
 		{
 			if( _Animator == null ){ return; }
 
-			var velocity = mRigidbody.linearVelocity;
+			var velocity = mRigidbody != null ? mRigidbody.linearVelocity : Vector2.zero;
 		
 			_Animator.SetBool( AnimatorHash_IsMoving, IsMoving );
 		
@@ -154,39 +207,20 @@ namespace Ptk
 
 		private void CheckGround()
 		{
+			bool beforeIsGrounded = IsGrounded;
 			IsGrounded = false;
 
-			// TODO
-			int LayerIndex_Ground = LayerMask.GetMask( LayerName_Ground );
+			if( mRigidbody == null ){ return; }
 
-			var downDir = Vector2.down;
-			var rect = GetCheckGroundBox();
-			int hitCount = Physics2D.BoxCastNonAlloc( rect.position, rect.size, 0, downDir, mRaycastHit2Ds, _GroundCastDistance, LayerIndex_Ground );
-		
-			//for( int i = 0; i < hitCount; ++i )
-			//{
-			//	mRaycastHit2Ds[ i ].
-			//}
-			IsGrounded = 0 < hitCount;
+			IsGrounded = mRigidbody.IsTouching( _CheckGroudedContactFilter );
+
 			if( IsGrounded )
 			{
-				IsJumping = false;
-				_Animator.ResetTrigger( AnimatorHash_IsJumping );
-			}
-		}
-
-		public Rect GetCheckGroundBox()
-		{
-			if( _BoxCollider == null )
-			{
-				var pos = transform.position;
-				return new Rect( new Vector2( pos.x, pos.y ) + _BoxCollider.offset, Vector2.one );
-			}
-			else
-			{
-				var boxSize = _BoxCollider.size * _BoxCollider.transform.lossyScale;
-				var pos = _BoxCollider.transform.TransformPoint( _BoxCollider.offset );
-				return new Rect( new Vector2( pos.x, pos.y ), boxSize );
+				if( IsJumping
+				 && mJumpStartTime + GroudedCheckIgnoreTimeAfterJump < Time.time )
+				{
+					ResetJump();
+				};
 			}
 		}
 
@@ -195,8 +229,6 @@ namespace Ptk
 			Vector2 movementInput = context.ReadValue<Vector2>();
 			mMoveInput = movementInput;
 		
-			IsMoving = 0 < Mathf.Abs(mMoveInput.x);
-
 			if (context.canceled)
 			{
 				IsMoving = false;
@@ -213,25 +245,22 @@ namespace Ptk
 		{
 			if (context.performed)
 			{
-				if( !IsJumping )
+				//DoJump();
+				if( AbilitySystem != null )
 				{
-					mJumpInput = true;
+					var abilityJump = AbilitySystem.GetAbility<AbilityJump>();
+					if( abilityJump != null )
+					{
+						abilityJump.Execute();
+					}
 				}
 			}
-			else if (context.canceled)
-			{
-				mJumpInput = false;
-			}
-
 		}
 
 
 		public void OnDrawGizmos()
 		{
 			Gizmos.DrawRay( transform.position, new Vector3( mMoveInput.x, mMoveInput.y, 0  ) );
-
-			var rect = GetCheckGroundBox();
-			Gizmos.DrawWireCube( new Vector3( rect.position.x, rect.position.y, transform.position.z ), new Vector3( rect.size.x, rect.size.y, 0.01f ) );
 		}
 
 #if UNITY_EDITOR
@@ -248,6 +277,7 @@ namespace Ptk
 				if( chara == null ) { return; }
 
 				EditorGUILayout.LabelField( $"IsGrounded : {chara.IsGrounded}");
+				EditorGUILayout.LabelField( $"IsJumping : {chara.IsJumping} ({chara.JumpCount})");
 				if( chara.mRigidbody != null )
 				{
 					EditorGUILayout.LabelField( $"VelocityX : {chara.mRigidbody.linearVelocityX}");

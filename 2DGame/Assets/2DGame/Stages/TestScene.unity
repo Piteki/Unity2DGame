@@ -575,7 +575,7 @@ MonoBehaviour:
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
   ChannelMask: -1
-  UpdateMethod: 2
+  UpdateMethod: 0
   BlendUpdateMethod: 1
   LensModeOverride:
     Enabled: 0
@@ -729,34 +729,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7371448074757889978, guid: 08bd3a2430b57dd428b0e72d0320115d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 937385707}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 08bd3a2430b57dd428b0e72d0320115d, type: 3}
 --- !u!4 &822564327 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2718716845799535251, guid: 08bd3a2430b57dd428b0e72d0320115d, type: 3}
   m_PrefabInstance: {fileID: 794020695}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &937385703 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7371448074757889978, guid: 08bd3a2430b57dd428b0e72d0320115d, type: 3}
-  m_PrefabInstance: {fileID: 794020695}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &937385707
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937385703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a76e3ad82a26913438ede6be0f62193c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Abilities: []
 --- !u!1 &957823063
 GameObject:
   m_ObjectHideFlags: 0
