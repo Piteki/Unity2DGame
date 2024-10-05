@@ -226,12 +226,15 @@ MonoBehaviour:
   _moveSpeed: 5
   _moveAcceleration: 1
   _AirMoveAcceleration: 0.2
-  _JumpSpeed: 5
+  _JumpSpeed: 9
+  _JumpBrakeTime: 0.5
   _JumpCountLimit: 2
   _IgnoreGroundedWhenFirstJump: 0
   _BrakeAcceleration: 0.5
   _AirBrakeAcceleration: 0.1
   _MoveStopSpeedThreshold: 0.01
+  _CastDistance: 0.1
+  _GroundAdsorbAngle: 46
   _CheckGroudedContactFilter:
     useTriggers: 0
     useLayerMask: 1

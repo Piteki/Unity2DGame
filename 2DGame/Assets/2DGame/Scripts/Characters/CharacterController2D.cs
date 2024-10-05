@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Ptk.AbilitySystems;
 using UnityEngine.Rendering;
+using System.Linq;
+
 
 
 #if UNITY_EDITOR
@@ -40,6 +42,9 @@ namespace Ptk
 		[SerializeField] float _AirBrakeAcceleration = 0.1f;
 		[SerializeField] float _MoveStopSpeedThreshold = 0.01f;
 
+		[SerializeField] float _CastDistance = 0.1f;
+		[SerializeField] float _GroundAdsorbAngle = 46.0f;
+
 		[SerializeField] ContactFilter2D _CheckGroudedContactFilter = new()
 		{
 			useNormalAngle = true,
@@ -47,12 +52,16 @@ namespace Ptk
 			maxNormalAngle = 136.0f,
 		};
 
+		private Rigidbody2D mRigidbody;
 
 		private Vector2 mMoveInput;
 		private bool mJumpInput;
 
-		private Rigidbody2D mRigidbody;
+		private Vector2 mMoveDirection;
+
+
 		private RaycastHit2D[] mRaycastHit2Ds = new RaycastHit2D[10];
+		private RaycastHit2D mLastHitGround;
 
 		private float mJumpStartTime;
 
@@ -93,10 +102,26 @@ namespace Ptk
 		}
 		protected void UpdateMove()
 		{
-			//float fixedDeltaDiv = 1 / Time.fixedDeltaTime;
+			var gravityDir = Physics2D.gravity.normalized;
 
 			var velocity = mRigidbody.linearVelocity;
 			var force = Vector2.zero;
+
+			mMoveDirection = Vector2.right;
+			if( IsGrounded 
+			 && mLastHitGround.collider != null 
+			){
+				var normal = mLastHitGround.normal;
+				var groundAngle = Vector2.Angle( normal, -gravityDir );
+				if( groundAngle <= _GroundAdsorbAngle )
+				{
+					mMoveDirection = -Vector2.Perpendicular( normal );
+				}
+			}
+
+			float dot = Vector2.Dot( mMoveDirection, velocity );
+			float speed = Mathf.Abs( dot );
+
 			if( IsMoving )
 			{
 				//float moveFactor = (_moveSpeed * Mathf.Abs( mMoveInput.x ) - Mathf.Abs( velocity.x ) ) * fixedDeltaDiv;
@@ -106,27 +131,27 @@ namespace Ptk
 				float acc = IsGrounded ? _moveAcceleration : _AirMoveAcceleration;
 				float addSpd = acc * moveDir;
 
-			
-
 				float maxSpeed = Mathf.Abs( _moveSpeed * mMoveInput.x );
-				if( maxSpeed < Mathf.Abs( addSpd + velocity.x ) )
+				if( maxSpeed < Mathf.Abs( addSpd + dot ) )
 				{
 					addSpd = 0;
 				}
-				force.x = addSpd;// * fixedDeltaDiv;
+				//force.x = addSpd;
+				force = mMoveDirection * addSpd;
 			}
 			else
 			{
 				float brakeAcc = IsGrounded ? _BrakeAcceleration : _AirBrakeAcceleration;
 				float brakeDir = velocity.x < 0 ? 1: - 1;
-				float speed = Mathf.Abs(velocity.x);
 				if(  _MoveStopSpeedThreshold < speed )
 				{
-					force.x = brakeDir * Mathf.Min( speed, brakeAcc );// * fixedDeltaDiv;
+					//force.x = brakeDir * Mathf.Min( speed, brakeAcc );
+					force = mMoveDirection * brakeDir * Mathf.Min( speed, brakeAcc );
 				}
-				else
+				else if( IsGrounded )
 				{
-					mRigidbody.linearVelocityX = 0;
+					mRigidbody.linearVelocity = Vector2.zero;
+					
 				}
 			}
 
@@ -227,7 +252,23 @@ namespace Ptk
 
 			if( mRigidbody == null ){ return; }
 
+
+#if false
 			IsGrounded = mRigidbody.IsTouching( _CheckGroudedContactFilter );
+#else
+			// IsTouching() だと小さな起伏でも空中判定されるので cast のほうが有利かも
+			if( _BoxCollider == null ){ return; }
+			var boxSize = _BoxCollider.size * _BoxCollider.transform.lossyScale;
+			var pos = _BoxCollider.transform.TransformPoint( _BoxCollider.offset );
+			var gravityDir = Physics2D.gravity.normalized;
+			int hitCount = Physics2D.BoxCast( pos, boxSize, 0, gravityDir, _CheckGroudedContactFilter, mRaycastHit2Ds, _CastDistance );
+			IsGrounded = 0 < hitCount;
+
+			if( 0 < hitCount )
+			{
+				mLastHitGround = mRaycastHit2Ds.FirstOrDefault();
+			}
+#endif
 
 			if( IsGrounded )
 			{
@@ -237,6 +278,7 @@ namespace Ptk
 					ResetJump();
 				};
 			}
+
 		}
 
 		public void OnMoveInput(InputAction.CallbackContext context)
@@ -280,7 +322,14 @@ namespace Ptk
 
 		public void OnDrawGizmos()
 		{
+			var before_color = Gizmos.color;
+
 			Gizmos.DrawRay( transform.position, new Vector3( mMoveInput.x, mMoveInput.y, 0  ) );
+
+			Gizmos.color = Color.green;
+			Gizmos.DrawRay( transform.position, new Vector3( mMoveDirection.x, mMoveDirection.y, 0  ) );
+
+			Gizmos.color = before_color;
 		}
 
 #if UNITY_EDITOR
@@ -300,8 +349,8 @@ namespace Ptk
 				EditorGUILayout.LabelField( $"IsJumping : {chara.IsJumping} ({chara.JumpCount})");
 				if( chara.mRigidbody != null )
 				{
-					EditorGUILayout.LabelField( $"VelocityX : {chara.mRigidbody.linearVelocityX}");
-					EditorGUILayout.LabelField( $"VelocityY : {chara.mRigidbody.linearVelocityY}");
+					EditorGUILayout.LabelField( $"Velocity : {chara.mRigidbody.linearVelocity}");
+					EditorGUILayout.LabelField( $"Magnitude : {chara.mRigidbody.linearVelocity.magnitude}");
 				}
 				
 			}
