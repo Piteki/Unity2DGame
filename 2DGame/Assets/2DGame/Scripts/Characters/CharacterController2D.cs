@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Ptk.AbilitySystems;
+using UnityEngine.Rendering;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -31,6 +33,7 @@ namespace Ptk
 		[SerializeField] float _moveAcceleration = 1.0f;
 		[SerializeField] float _AirMoveAcceleration = 0.2f;
 		[SerializeField] float _JumpSpeed = 5;
+		[SerializeField] float _JumpBrakeTime = 0.5f;
 		[SerializeField] int _JumpCountLimit = 1;
 		[SerializeField] bool _IgnoreGroundedWhenFirstJump = false;
 		[SerializeField] float _BrakeAcceleration = 0.5f;
@@ -46,6 +49,7 @@ namespace Ptk
 
 
 		private Vector2 mMoveInput;
+		private bool mJumpInput;
 
 		private Rigidbody2D mRigidbody;
 		private RaycastHit2D[] mRaycastHit2Ds = new RaycastHit2D[10];
@@ -85,8 +89,8 @@ namespace Ptk
 		void FixedUpdate()
 		{
 			UpdateMove();
+			UpdateJump();
 		}
-
 		protected void UpdateMove()
 		{
 			//float fixedDeltaDiv = 1 / Time.fixedDeltaTime;
@@ -129,6 +133,16 @@ namespace Ptk
 			mRigidbody.AddForce( force, ForceMode2D.Impulse );
 		}
 
+		protected void UpdateJump()
+		{
+			if( !IsJumping ){ return; }
+			if( mRigidbody == null ){ return; }
+			if( mRigidbody.linearVelocityY <= 0 ){ return; }
+			if( !mJumpInput )
+			{
+				mRigidbody.linearVelocityY -= Mathf.Min( mRigidbody.linearVelocityY,  _JumpSpeed.SafeDivide(_JumpBrakeTime) * Time.fixedDeltaTime );
+			}
+		}
 
 		public virtual bool CheckCanJump()
 		{
@@ -170,6 +184,7 @@ namespace Ptk
 			JumpCount = 0;
 			_Animator.ResetTrigger( AnimatorHash_IsJumping );
 		}
+
 
 		private void Update()
 		{
@@ -245,6 +260,7 @@ namespace Ptk
 		{
 			if (context.performed)
 			{
+				mJumpInput = true;
 				//DoJump();
 				if( AbilitySystem != null )
 				{
@@ -254,6 +270,10 @@ namespace Ptk
 						abilityJump.Execute();
 					}
 				}
+			}
+			else if( context.canceled )
+			{
+				mJumpInput = false;
 			}
 		}
 
