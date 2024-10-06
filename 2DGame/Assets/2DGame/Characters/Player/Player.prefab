@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7598988403906053334}
   - component: {fileID: 432338743337092174}
   - component: {fileID: 4641373296735236442}
+  - component: {fileID: 2856203483091972839}
   m_Layer: 0
   m_Name: Chara
   m_TagString: Untagged
@@ -157,6 +158,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2856203483091972839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513848584174826658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8528a3d608700744986bb06fa848b2c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7371448074757889978
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,6 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Abilities:
   - {fileID: 11400000, guid: 5e8261cfb5bc3064ba4f50c9a925b677, type: 2}
+  - {fileID: 11400000, guid: 0c7d4b5192a028245840200c5965e8c4, type: 2}
 --- !u!114 &319707545041514057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,6 +236,7 @@ MonoBehaviour:
   _BoxCollider: {fileID: 432338743337092174}
   _SpriteRenderer: {fileID: 7598988403906053334}
   _Animator: {fileID: 4641373296735236442}
+  _PlayerInput: {fileID: 0}
   _AbilitySystem: {fileID: 4995924308116066867}
   _moveSpeed: 5
   _moveAcceleration: 1
@@ -233,7 +248,7 @@ MonoBehaviour:
   _BrakeAcceleration: 0.5
   _AirBrakeAcceleration: 0.1
   _MoveStopSpeedThreshold: 0.01
-  _CastDistance: 0.1
+  _GroundCastDistance: 0.1
   _GroundAdsorbAngle: 46
   _CheckGroudedContactFilter:
     useTriggers: 0
@@ -306,6 +321,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: d14bb4eb-5437-40ac-a8fa-fc4ae034fbba
     m_ActionName: 'Player/Jump[/Keyboard/space,/DualShock4GamepadHID/buttonNorth]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 319707545041514057}
+        m_TargetAssemblyTypeName: Ptk.CharacterController2D, Assembly-CSharp
+        m_MethodName: OnAttackInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a313c74d-79f9-4b5b-a624-12187e8fb1a0
+    m_ActionName: 'Player/Attack[/Keyboard/j,/Mouse/leftButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

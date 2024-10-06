@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using Ptk.AbilitySystems;
 using UnityEngine.Rendering;
 using System.Linq;
-
+using Unity.Logging;
 
 
 #if UNITY_EDITOR
@@ -15,7 +15,7 @@ using UnityEditor;
 namespace Ptk
 {
 	[RequireComponent(typeof(Rigidbody2D))]
-	public class CharacterController2D : MonoBehaviour
+	public class CharacterController2D : MonoBehaviour, ICharacterAnimationEventListener
 	{
 		static public readonly int AnimatorHash_IsMoving = Animator.StringToHash("IsMoving");
 		static public readonly int AnimatorHash_IsJumping = Animator.StringToHash("IsJumping");
@@ -24,11 +24,16 @@ namespace Ptk
 		static public readonly int AnimatorHash_VelocityY = Animator.StringToHash("VelocityY");
 		static public readonly int AnimatorHash_IsGrounded = Animator.StringToHash("IsGrounded");
 
+		static public readonly int AnimatorHash_NormalAttack = Animator.StringToHash("NormalAttack");
+
 		static public readonly float GroudedCheckIgnoreTimeAfterJump = 0.1f;
 
 		[SerializeField] BoxCollider2D _BoxCollider;
 		[SerializeField] SpriteRenderer _SpriteRenderer;
 		[SerializeField] Animator _Animator;
+		[SerializeField] PlayerInput _PlayerInput;
+		[SerializeField] CharacterAnimationEventReceiver _CharacterAnimationEventReceiver;
+		
 		[SerializeField] AbilitySystem _AbilitySystem;
 
 		[SerializeField] float _moveSpeed = 5;
@@ -42,7 +47,7 @@ namespace Ptk
 		[SerializeField] float _AirBrakeAcceleration = 0.1f;
 		[SerializeField] float _MoveStopSpeedThreshold = 0.01f;
 
-		[SerializeField] float _CastDistance = 0.1f;
+		[SerializeField] float _GroundCastDistance = 0.1f;
 		[SerializeField] float _GroundAdsorbAngle = 46.0f;
 
 		[SerializeField] ContactFilter2D _CheckGroudedContactFilter = new()
@@ -66,15 +71,24 @@ namespace Ptk
 		private float mJumpStartTime;
 
 		public AbilitySystem  AbilitySystem => _AbilitySystem;
+		public Animator  Animator => _Animator;
 		public bool IsMoving { get; private set; }
 		public bool CanJump => CheckCanJump();
 		public bool IsJumping => 0 < JumpCount;
 		public int JumpCount { get; private set; }
 		public bool IsGrounded { get; private set; }
 
-		void Start()
+		protected virtual void OnEnable()
 		{
 			mRigidbody = GetComponent<Rigidbody2D>();
+			if( _AbilitySystem == null )
+			{
+				_AbilitySystem = GetComponent<AbilitySystem>();
+			}
+			if( _PlayerInput == null )
+			{
+				_PlayerInput = GetComponent<PlayerInput>();
+			}
 			if( _BoxCollider == null )
 			{
 				_BoxCollider = GetComponentInChildren<BoxCollider2D>();
@@ -87,12 +101,36 @@ namespace Ptk
 			{
 				_Animator = GetComponentInChildren<Animator>();
 			}
-			if( _AbilitySystem == null )
+			if( _CharacterAnimationEventReceiver == null )
 			{
-				_AbilitySystem = GetComponent<AbilitySystem>();
+				_CharacterAnimationEventReceiver = GetComponentInChildren<CharacterAnimationEventReceiver>();
 			}
 			
-		
+			if( _CharacterAnimationEventReceiver != null )
+			{
+				_CharacterAnimationEventReceiver.AddListener( this );
+			}
+			
+			//if( _PlayerInput != null )
+			//{
+			//	_PlayerInput.onActionTriggered -= OnInputActionTriggered;
+			//	_PlayerInput.onActionTriggered += OnInputActionTriggered;
+			//}
+
+		}
+
+		protected virtual void OnDisable()
+		{
+			//if( _PlayerInput != null )
+			//{
+			//	_PlayerInput.onActionTriggered -= OnInputActionTriggered;
+			//}
+
+			if( _CharacterAnimationEventReceiver != null )
+			{
+				_CharacterAnimationEventReceiver.RemoveListener( this );
+			}
+
 		}
 
 		void FixedUpdate()
@@ -153,10 +191,9 @@ namespace Ptk
 				float brakeDir = moveDirVelocity < 0 ? 1: - 1;
 				if(  _MoveStopSpeedThreshold < moveSpeed )
 				{
-					//force.x = brakeDir * Mathf.Min( speed, brakeAcc );
 					force = mMoveDirection * brakeDir * Mathf.Min( moveSpeed, brakeAcc );
 				}
-				else if( IsGrounded )
+				else if( IsGrounded && !IsJumping)
 				{
 					mRigidbody.linearVelocity = Vector2.zero;
 					
@@ -177,6 +214,10 @@ namespace Ptk
 			}
 		}
 
+		/// <summary>
+		/// Jump 可能かをチェック
+		/// </summary>
+		/// <returns></returns>
 		public virtual bool CheckCanJump()
 		{
 			if( _JumpCountLimit <= JumpCount ) { return false; }
@@ -269,7 +310,7 @@ namespace Ptk
 			var boxSize = _BoxCollider.size * _BoxCollider.transform.lossyScale;
 			var pos = _BoxCollider.transform.TransformPoint( _BoxCollider.offset );
 			var gravityDir = Physics2D.gravity.normalized;
-			int hitCount = Physics2D.BoxCast( pos, boxSize, 0, gravityDir, _CheckGroudedContactFilter, mRaycastHit2Ds, _CastDistance );
+			int hitCount = Physics2D.BoxCast( pos, boxSize, 0, gravityDir, _CheckGroudedContactFilter, mRaycastHit2Ds, _GroundCastDistance );
 			IsGrounded = 0 < hitCount;
 
 			if( 0 < hitCount )
@@ -288,6 +329,15 @@ namespace Ptk
 			}
 
 		}
+
+
+		/// 
+		//private void OnInputActionTriggered(InputAction.CallbackContext context)
+		//{
+		//		// XXX ここで context.action.name == "Move" とかするのはダサい
+		//		// XXX かといって FincAction( "Move" ); をあらかじめやっておくのもなんかしっくりこない
+		//		// XXX 結局は UnityEvent でいいんじゃないかという事で onActionTriggered は保留。
+		//}
 
 		public void OnMoveInput(InputAction.CallbackContext context)
 		{
@@ -327,6 +377,36 @@ namespace Ptk
 			}
 		}
 
+		public void OnAttackInput(InputAction.CallbackContext context)
+		{
+			if (context.performed)
+			{
+				if( AbilitySystem != null )
+				{
+					var abilityAttack = AbilitySystem.GetAbility<AbilityAttack>();
+					if( abilityAttack != null )
+					{
+						abilityAttack.Execute();
+					}
+				}
+			}
+
+		}
+
+		public void OnBeginAttackHit( AnimationEvent animationEvent )
+		{
+			Log.Info( "Character.OnBeginAttackHit" );
+		}
+
+		public void OnEndAttackHit( AnimationEvent animationEvent )
+		{
+			Log.Info( "Character.OnEndAttackHit" );
+		}
+
+		public void OnStep( AnimationEvent animationEvent )
+		{
+
+		}
 
 		public void OnDrawGizmos()
 		{
