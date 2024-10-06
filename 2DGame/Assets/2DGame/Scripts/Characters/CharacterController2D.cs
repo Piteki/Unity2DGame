@@ -15,7 +15,7 @@ using UnityEditor;
 namespace Ptk
 {
 	[RequireComponent(typeof(Rigidbody2D))]
-	public class CharacterController2D : MonoBehaviour, ICharacterAnimationEventListener
+	public class CharacterController2D : Entity, ICharacterAnimationEventListener
 	{
 		static public readonly int AnimatorHash_IsMoving = Animator.StringToHash("IsMoving");
 		static public readonly int AnimatorHash_IsJumping = Animator.StringToHash("IsJumping");
@@ -33,6 +33,7 @@ namespace Ptk
 		[SerializeField] Animator _Animator;
 		[SerializeField] PlayerInput _PlayerInput;
 		[SerializeField] CharacterAnimationEventReceiver _CharacterAnimationEventReceiver;
+		[SerializeField] CharacterColliderContainer2D _CharacterColliderContainer;
 		
 		[SerializeField] AbilitySystem _AbilitySystem;
 
@@ -78,8 +79,10 @@ namespace Ptk
 		public int JumpCount { get; private set; }
 		public bool IsGrounded { get; private set; }
 
-		protected virtual void OnEnable()
+		protected override void OnEnable()
 		{
+			base.OnEnable();
+
 			mRigidbody = GetComponent<Rigidbody2D>();
 			if( _AbilitySystem == null )
 			{
@@ -105,10 +108,19 @@ namespace Ptk
 			{
 				_CharacterAnimationEventReceiver = GetComponentInChildren<CharacterAnimationEventReceiver>();
 			}
+			if( _CharacterColliderContainer == null )
+			{
+				_CharacterColliderContainer = GetComponentInChildren<CharacterColliderContainer2D>();
+			}
 			
+
 			if( _CharacterAnimationEventReceiver != null )
 			{
 				_CharacterAnimationEventReceiver.AddListener( this );
+			}
+			if( _CharacterColliderContainer != null )
+			{
+				//_CharacterColliderContainer
 			}
 			
 			//if( _PlayerInput != null )
@@ -392,15 +404,41 @@ namespace Ptk
 			}
 
 		}
+		private void OnTriggerEnter2D( Collider2D collision )
+		{
+			if( collision == null ){ return; }
+			Log.Info( $"OnTriggerEnter2D collider = {collision.name}" );
+
+			var entity = collision.GetComponentInParent< Entity >();
+			if( entity != null )
+			{
+				entity.Damage( 1 );
+			}
+		}
+		private void OnTriggerExit2D( Collider2D collision )
+		{
+			if( collision == null ){ return; }
+			Log.Info( $"OnTriggerExit2D collider = {collision.name}" );
+		}
 
 		public void OnBeginAttackHit( AnimationEvent animationEvent )
 		{
 			Log.Info( "Character.OnBeginAttackHit" );
+			if( _CharacterColliderContainer != null 
+			 && _CharacterColliderContainer.NormalAttackCollider != null
+			){
+				_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( true );
+			}
 		}
 
 		public void OnEndAttackHit( AnimationEvent animationEvent )
 		{
 			Log.Info( "Character.OnEndAttackHit" );
+			if( _CharacterColliderContainer != null 
+			 && _CharacterColliderContainer.NormalAttackCollider != null
+			){
+				_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( false );
+			}
 		}
 
 		public void OnStep( AnimationEvent animationEvent )
