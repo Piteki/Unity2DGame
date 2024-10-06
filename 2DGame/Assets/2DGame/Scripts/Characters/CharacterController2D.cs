@@ -119,34 +119,42 @@ namespace Ptk
 				}
 			}
 
-			float dot = Vector2.Dot( mMoveDirection, velocity );
-			float speed = Mathf.Abs( dot );
+			float moveDirVelocity = Vector2.Dot( mMoveDirection, velocity );
+			float moveSpeed = Mathf.Abs( moveDirVelocity );
 
 			if( IsMoving )
 			{
-				//float moveFactor = (_moveSpeed * Mathf.Abs( mMoveInput.x ) - Mathf.Abs( velocity.x ) ) * fixedDeltaDiv;
-				//forceX = mMoveInput.x * moveFactor;
-				float moveDir = mMoveInput.x < 0 ? - 1: 1;
-
+				float moveDirSign = 0 < mMoveInput.x ? 1 : -1;
+				float moveMax = _moveSpeed * mMoveInput.x;
 				float acc = IsGrounded ? _moveAcceleration : _AirMoveAcceleration;
-				float addSpd = acc * moveDir;
+				float spd = moveDirVelocity + acc * moveDirSign;
 
-				float maxSpeed = Mathf.Abs( _moveSpeed * mMoveInput.x );
-				if( maxSpeed < Mathf.Abs( addSpd + dot ) )
+				if( 0 < moveDirSign )
 				{
-					addSpd = 0;
+					if( moveMax < spd )
+					{
+						acc = 0;
+					}
 				}
-				//force.x = addSpd;
-				force = mMoveDirection * addSpd;
+				else
+				{
+					if( spd < moveMax )
+					{
+						acc = 0;
+					}
+					
+				}
+				force = mMoveDirection * acc * moveDirSign;
+
 			}
 			else
 			{
 				float brakeAcc = IsGrounded ? _BrakeAcceleration : _AirBrakeAcceleration;
-				float brakeDir = velocity.x < 0 ? 1: - 1;
-				if(  _MoveStopSpeedThreshold < speed )
+				float brakeDir = moveDirVelocity < 0 ? 1: - 1;
+				if(  _MoveStopSpeedThreshold < moveSpeed )
 				{
 					//force.x = brakeDir * Mathf.Min( speed, brakeAcc );
-					force = mMoveDirection * brakeDir * Mathf.Min( speed, brakeAcc );
+					force = mMoveDirection * brakeDir * Mathf.Min( moveSpeed, brakeAcc );
 				}
 				else if( IsGrounded )
 				{
