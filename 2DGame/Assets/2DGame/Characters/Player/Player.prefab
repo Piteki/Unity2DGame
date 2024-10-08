@@ -234,11 +234,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97ed679236a9a724b9514b9b06e8ef61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _BodyColliders: []
+  _BodyColliders:
+  - {fileID: 432338743337092174}
   _MaxHealth: 1
   _SpriteRenderer: {fileID: 7598988403906053334}
   _Animator: {fileID: 4641373296735236442}
-  _CharacterAnimationEventReceiver: {fileID: 2856203483091972839}
   _BoxCollider: {fileID: 432338743337092174}
   _PlayerInput: {fileID: 7967753349930129038}
   _CharacterColliderContainer: {fileID: 6762621844991184721}

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _AutoExecute: 0
   _RestartWhenExecuting: 0
+  _BaseDamage: 1

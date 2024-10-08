@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Ptk.AbilitySystems;
+using System;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,8 +15,13 @@ namespace Ptk
 
 
 
-	[CreateAssetMenu(fileName = "New Attack Ability.asset", menuName = "2DGame/Ability/Attack")]
-	public class AbilityAttack : AbilityData 
+	[CreateAssetMenu( fileName = "New Jump Ability.asset", menuName = "2DGame/Ability/Jump" )]
+	public class AbilityDataJump : AbilityData< AbilityJump, AbilityDataJump >
+	{
+		
+	}
+
+	public class AbilityJump : AbilityBase< AbilityJump, AbilityDataJump >
 	{
 		public CharacterController2D CharaController { get; private set; }
 
@@ -32,7 +39,8 @@ namespace Ptk
 
 		protected override bool CheckCanExecute()
 		{
-			return CharaController == null ? false : true;
+			if( !base.CheckCanExecute() ){ return false; }
+			return CharaController == null ? false : CharaController.CheckCanJump();
 		}
 
 
@@ -41,16 +49,18 @@ namespace Ptk
 			base.OnExecuted();
 				 
 			if ( CharaController == null ) { Finish(); return; }
-			if ( CharaController.Animator == null ) { Finish(); return; }
 			
-			CharaController.Animator.Play( CharacterController2D.AnimatorHash_NormalAttack );
+			if( !CharaController.DoJump() ) { Finish(); return; }
+
+
 		}
 
 		protected override void OnUpdate()
 		{
 			base.OnUpdate();
 			if ( CharaController == null 
-			 || true
+			 || !CharaController.IsJumping
+			// || CharaController.IsGrounded
 			){
 				Finish();
 				return;

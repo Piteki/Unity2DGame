@@ -21,6 +21,7 @@ namespace Ptk
 	/// </summary>
 	public class Entity : MonoBehaviour
 	{
+
 		[SerializeField] private List<Collider2D> _BodyColliders;
 
 
@@ -41,7 +42,12 @@ namespace Ptk
 
 		protected virtual void OnEnable()
 		{
-			
+			EntityColliders.AddEntity(this);
+		}
+
+		protected virtual void OnDisable()
+		{
+			EntityColliders.RemoveEntity(this);
 		}
 
 		public virtual void ResetStatus()
@@ -78,6 +84,46 @@ namespace Ptk
 
 		}
 
+	}
+
+	static public class EntityColliders
+	{
+		static Dictionary< Collider2D, Entity > _Colliders;
+
+		[RuntimeInitializeOnLoadMethod( RuntimeInitializeLoadType.BeforeSceneLoad )]
+		static private void Initialize()
+		{
+			_Colliders = new Dictionary< Collider2D, Entity >();
+		}
+
+		static public void AddEntity( Entity entity )
+		{
+			if( entity == null ){ return; }
+			if( entity.BodyColliders == null ){ return; }
+
+			foreach( var collider in entity.BodyColliders )
+			{
+				if( collider == null ){ continue; }
+				_Colliders.TryAdd( collider, entity );
+			}
+		}
+
+		static public void RemoveEntity( Entity entity )
+		{
+			if( entity == null ){ return; }
+			if( entity.BodyColliders == null ){ return; }
+			foreach( var collider in entity.BodyColliders )
+			{
+				_Colliders.Remove( collider );
+			}
+		}
+
+		static public Entity GetEntity( Collider2D collider )
+		{
+			if( !_Colliders.TryGetValue( collider, out var entity ) ){ return null; }
+			return entity;
+		}
 
 	}
+
 }

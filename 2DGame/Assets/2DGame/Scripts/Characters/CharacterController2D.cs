@@ -6,6 +6,8 @@ using Ptk.AbilitySystems;
 using UnityEngine.Rendering;
 using System.Linq;
 using Unity.Logging;
+using Unity.VisualScripting;
+
 
 
 #if UNITY_EDITOR
@@ -30,7 +32,6 @@ namespace Ptk
 
 		[SerializeField] SpriteRenderer _SpriteRenderer;
 		[SerializeField] Animator _Animator;
-		[SerializeField] CharacterAnimationEventReceiver _CharacterAnimationEventReceiver;
 		[SerializeField] BoxCollider2D _BoxCollider;
 		[SerializeField] PlayerInput _PlayerInput;
 		[SerializeField] CharacterColliderContainer2D _CharacterColliderContainer;
@@ -73,6 +74,11 @@ namespace Ptk
 
 		public AbilitySystem  AbilitySystem => _AbilitySystem;
 		public Animator  Animator => _Animator;
+
+		public CharacterColliderContainer2D CharacterColliderContainer => _CharacterColliderContainer;
+		public CharacterAnimationEventReceiver CharacterAnimationEventReceiver { get; protected set; } 
+		public AttackAnimationEventReceiver AttackAnimationEventReceiver { get; protected set; } 
+
 		public bool IsMoving { get; private set; }
 		public bool CanJump => CheckCanJump();
 		public bool IsJumping => 0 < JumpCount;
@@ -80,9 +86,9 @@ namespace Ptk
 		public bool IsGrounded { get; private set; }
 		public bool IsFlipX => _SpriteRenderer != null ? _SpriteRenderer.flipX : false;
 
-		protected override void OnEnable()
+		protected override void Awake()
 		{
-			base.OnEnable();
+			base.Awake();
 
 			mRigidbody = GetComponent<Rigidbody2D>();
 			if( _AbilitySystem == null )
@@ -109,16 +115,8 @@ namespace Ptk
 			{
 				_BoxCollider = GetComponentInChildren<BoxCollider2D>();
 			}
-			if( _CharacterAnimationEventReceiver == null )
-			{
-				_CharacterAnimationEventReceiver = GetComponentInChildren<CharacterAnimationEventReceiver>();
-			}
 			
 
-			if( _CharacterAnimationEventReceiver != null )
-			{
-				_CharacterAnimationEventReceiver.AddListener( this );
-			}
 			if( _CharacterColliderContainer != null )
 			{
 				_CharacterColliderContainer.Initialize( this );
@@ -131,17 +129,31 @@ namespace Ptk
 			//}
 
 		}
-
-		protected virtual void OnDisable()
+		protected override void OnEnable()
 		{
+			base.OnEnable();
+
+			if( _Animator != null )
+			{
+				CharacterAnimationEventReceiver = _Animator.gameObject.AddComponent< CharacterAnimationEventReceiver >();
+				CharacterAnimationEventReceiver.AddListener( this );
+
+				AttackAnimationEventReceiver = _Animator.gameObject.AddComponent< AttackAnimationEventReceiver >();
+			}
+		}
+
+		protected override void OnDisable()
+		{
+			base.OnDisable();
+
 			//if( _PlayerInput != null )
 			//{
 			//	_PlayerInput.onActionTriggered -= OnInputActionTriggered;
 			//}
 
-			if( _CharacterAnimationEventReceiver != null )
+			if( CharacterAnimationEventReceiver != null )
 			{
-				_CharacterAnimationEventReceiver.RemoveListener( this );
+				CharacterAnimationEventReceiver.RemoveListener( this );
 			}
 
 		}
@@ -408,62 +420,16 @@ namespace Ptk
 		protected override void OnTriggerEnter2D( Collider2D collision )
 		{
 			base.OnTriggerEnter2D( collision );
-			//if( collision == null ){ return; }
+			if( collision == null ){ return; }
 
-			//// TODO ここではなくて 攻撃を受けた側の Entity もしくは Ability に処理させること
-			//var entity = collision.GetComponentInParent< Entity >();
-			//if( entity != null )
-			//{
-			//	entity.Damage( 1 );
-			//}
 		}
+
 		protected override void OnTriggerExit2D( Collider2D collision )
 		{
 			base.OnTriggerExit2D( collision );
 			if( collision == null ){ return; }
 		}
 
-		public void OnBeginAttackHit( AnimationEvent animationEvent )
-		{
-			Log.Verbose( "Character.OnBeginAttackHit" );
-			//if( _CharacterColliderContainer != null 
-			// && _CharacterColliderContainer.NormalAttackCollider != null
-			//){
-			//	_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( true );
-			//}
-
-			if( _CharacterColliderContainer != null )
-			{
-				var triggerReceiver = _CharacterColliderContainer.InstantiateNormalAttackCollider();
-				if( triggerReceiver != null )
-				{
-					triggerReceiver.EventTriggerEnter2D += hitCollider => 
-					{
-						// TODO ここではなくて 攻撃を受けた側の Entity もしくは Ability に処理させること
-						var entity = hitCollider.GetComponentInParent< Entity >();
-						if( entity != null )
-						{
-							entity.Damage( 1 );
-						}
-					};
-				}
-			}
-		}
-
-		public void OnEndAttackHit( AnimationEvent animationEvent )
-		{
-			Log.Verbose( "Character.OnEndAttackHit" );
-			//if( _CharacterColliderContainer != null 
-			// && _CharacterColliderContainer.NormalAttackCollider != null
-			//){
-			//	_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( false );
-			//}
-
-			if( _CharacterColliderContainer != null )
-			{
-				_CharacterColliderContainer.DestroyNormalAttackCollider();
-			}
-		}
 
 		public void OnStep( AnimationEvent animationEvent )
 		{
