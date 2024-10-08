@@ -78,6 +78,7 @@ namespace Ptk
 		public bool IsJumping => 0 < JumpCount;
 		public int JumpCount { get; private set; }
 		public bool IsGrounded { get; private set; }
+		public bool IsFlipX => _SpriteRenderer != null ? _SpriteRenderer.flipX : false;
 
 		protected override void OnEnable()
 		{
@@ -120,7 +121,7 @@ namespace Ptk
 			}
 			if( _CharacterColliderContainer != null )
 			{
-				//_CharacterColliderContainer
+				_CharacterColliderContainer.Initialize( this );
 			}
 			
 			//if( _PlayerInput != null )
@@ -407,14 +408,14 @@ namespace Ptk
 		protected override void OnTriggerEnter2D( Collider2D collision )
 		{
 			base.OnTriggerEnter2D( collision );
-			if( collision == null ){ return; }
+			//if( collision == null ){ return; }
 
-			// TODO ここではなくて 攻撃を受けた側の Entity もしくは Ability に処理させること
-			var entity = collision.GetComponentInParent< Entity >();
-			if( entity != null )
-			{
-				entity.Damage( 1 );
-			}
+			//// TODO ここではなくて 攻撃を受けた側の Entity もしくは Ability に処理させること
+			//var entity = collision.GetComponentInParent< Entity >();
+			//if( entity != null )
+			//{
+			//	entity.Damage( 1 );
+			//}
 		}
 		protected override void OnTriggerExit2D( Collider2D collision )
 		{
@@ -424,21 +425,43 @@ namespace Ptk
 
 		public void OnBeginAttackHit( AnimationEvent animationEvent )
 		{
-			Log.Info( "Character.OnBeginAttackHit" );
-			if( _CharacterColliderContainer != null 
-			 && _CharacterColliderContainer.NormalAttackCollider != null
-			){
-				_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( true );
+			Log.Verbose( "Character.OnBeginAttackHit" );
+			//if( _CharacterColliderContainer != null 
+			// && _CharacterColliderContainer.NormalAttackCollider != null
+			//){
+			//	_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( true );
+			//}
+
+			if( _CharacterColliderContainer != null )
+			{
+				var triggerReceiver = _CharacterColliderContainer.InstantiateNormalAttackCollider();
+				if( triggerReceiver != null )
+				{
+					triggerReceiver.EventTriggerEnter2D += hitCollider => 
+					{
+						// TODO ここではなくて 攻撃を受けた側の Entity もしくは Ability に処理させること
+						var entity = hitCollider.GetComponentInParent< Entity >();
+						if( entity != null )
+						{
+							entity.Damage( 1 );
+						}
+					};
+				}
 			}
 		}
 
 		public void OnEndAttackHit( AnimationEvent animationEvent )
 		{
-			Log.Info( "Character.OnEndAttackHit" );
-			if( _CharacterColliderContainer != null 
-			 && _CharacterColliderContainer.NormalAttackCollider != null
-			){
-				_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( false );
+			Log.Verbose( "Character.OnEndAttackHit" );
+			//if( _CharacterColliderContainer != null 
+			// && _CharacterColliderContainer.NormalAttackCollider != null
+			//){
+			//	_CharacterColliderContainer.NormalAttackCollider.gameObject.SetActive( false );
+			//}
+
+			if( _CharacterColliderContainer != null )
+			{
+				_CharacterColliderContainer.DestroyNormalAttackCollider();
 			}
 		}
 

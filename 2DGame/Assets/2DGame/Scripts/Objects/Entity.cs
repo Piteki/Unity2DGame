@@ -68,13 +68,13 @@ namespace Ptk
 		protected virtual void OnTriggerEnter2D( Collider2D collision )
 		{
 			if( collision == null ){ return; }
-			Log.Info( $"OnTriggerEnter2D collider = {collision.name}" );
+			Log.Verbose( $"OnTriggerEnter2D collider = {collision.name}" );
 
 		}
 		protected virtual void OnTriggerExit2D( Collider2D collision )
 		{
 			if( collision == null ){ return; }
-			Log.Info( $"OnTriggerExit2D collider = {collision.name}" );
+			Log.Verbose( $"OnTriggerExit2D collider = {collision.name}" );
 
 		}
 
