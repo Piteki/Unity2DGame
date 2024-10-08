@@ -21,7 +21,12 @@ namespace Ptk
 	/// </summary>
 	public class Entity : MonoBehaviour
 	{
-		[SerializeField] private float MaxHealth = 1;
+		[SerializeField] private List<Collider2D> _BodyColliders;
+
+
+		[SerializeField] private float _MaxHealth = 1;
+
+		public List<Collider2D> BodyColliders => _BodyColliders;
 
 		public float Health { get; protected set; }
 
@@ -41,7 +46,7 @@ namespace Ptk
 
 		public virtual void ResetStatus()
 		{
-			Health = Mathf.Max( 0, MaxHealth );
+			Health = Mathf.Max( 0, _MaxHealth );
 		}
 
 
@@ -59,6 +64,20 @@ namespace Ptk
 			if( gameObject == null ){ return; }
 			Destroy( gameObject, 0.5f );
 		}
+
+		protected virtual void OnTriggerEnter2D( Collider2D collision )
+		{
+			if( collision == null ){ return; }
+			Log.Info( $"OnTriggerEnter2D collider = {collision.name}" );
+
+		}
+		protected virtual void OnTriggerExit2D( Collider2D collision )
+		{
+			if( collision == null ){ return; }
+			Log.Info( $"OnTriggerExit2D collider = {collision.name}" );
+
+		}
+
 
 	}
 }

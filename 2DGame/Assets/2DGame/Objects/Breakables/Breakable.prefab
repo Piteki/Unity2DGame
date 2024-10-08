@@ -152,4 +152,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 407db726bcb8b8748b82c34006779206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 1
+  _BodyColliders: []
+  _MaxHealth: 1

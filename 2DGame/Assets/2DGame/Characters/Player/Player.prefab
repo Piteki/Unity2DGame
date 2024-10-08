@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 432338743337092174}
   - component: {fileID: 4641373296735236442}
   - component: {fileID: 2856203483091972839}
-  - component: {fileID: 1782151164014430508}
   m_Layer: 0
   m_Name: Chara
   m_TagString: Untagged
@@ -256,19 +255,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8528a3d608700744986bb06fa848b2c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1782151164014430508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4513848584174826658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dab4e21efda4a2d43bcb02055fb40a1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _NormalAttackCollider: {fileID: 4325048498702633409}
 --- !u!1 &7371448074757889978
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,6 +266,7 @@ GameObject:
   - component: {fileID: 2718716845799535251}
   - component: {fileID: 4995924308116066867}
   - component: {fileID: 319707545041514057}
+  - component: {fileID: 6762621844991184721}
   - component: {fileID: 7967753349930129038}
   - component: {fileID: 3229409338524102680}
   m_Layer: 7
@@ -332,12 +319,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97ed679236a9a724b9514b9b06e8ef61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _BoxCollider: {fileID: 432338743337092174}
+  _BodyColliders: []
+  _MaxHealth: 1
   _SpriteRenderer: {fileID: 7598988403906053334}
   _Animator: {fileID: 4641373296735236442}
-  _PlayerInput: {fileID: 0}
-  _CharacterAnimationEventReceiver: {fileID: 0}
-  _CharacterColliderContainer: {fileID: 0}
+  _CharacterAnimationEventReceiver: {fileID: 2856203483091972839}
+  _BoxCollider: {fileID: 432338743337092174}
+  _PlayerInput: {fileID: 7967753349930129038}
+  _CharacterColliderContainer: {fileID: 6762621844991184721}
   _AbilitySystem: {fileID: 4995924308116066867}
   _moveSpeed: 5
   _moveAcceleration: 1
@@ -365,6 +354,19 @@ MonoBehaviour:
     maxDepth: 0
     minNormalAngle: 44
     maxNormalAngle: 136
+--- !u!114 &6762621844991184721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371448074757889978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dab4e21efda4a2d43bcb02055fb40a1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _NormalAttackCollider: {fileID: 4325048498702633409}
 --- !u!114 &7967753349930129038
 MonoBehaviour:
   m_ObjectHideFlags: 0

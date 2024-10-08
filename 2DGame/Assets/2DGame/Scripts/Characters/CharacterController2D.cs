@@ -28,11 +28,11 @@ namespace Ptk
 
 		static public readonly float GroudedCheckIgnoreTimeAfterJump = 0.1f;
 
-		[SerializeField] BoxCollider2D _BoxCollider;
 		[SerializeField] SpriteRenderer _SpriteRenderer;
 		[SerializeField] Animator _Animator;
-		[SerializeField] PlayerInput _PlayerInput;
 		[SerializeField] CharacterAnimationEventReceiver _CharacterAnimationEventReceiver;
+		[SerializeField] BoxCollider2D _BoxCollider;
+		[SerializeField] PlayerInput _PlayerInput;
 		[SerializeField] CharacterColliderContainer2D _CharacterColliderContainer;
 		
 		[SerializeField] AbilitySystem _AbilitySystem;
@@ -92,9 +92,9 @@ namespace Ptk
 			{
 				_PlayerInput = GetComponent<PlayerInput>();
 			}
-			if( _BoxCollider == null )
+			if( _CharacterColliderContainer == null )
 			{
-				_BoxCollider = GetComponentInChildren<BoxCollider2D>();
+				_CharacterColliderContainer = GetComponent<CharacterColliderContainer2D>();
 			}
 			if( _SpriteRenderer == null )
 			{
@@ -104,13 +104,13 @@ namespace Ptk
 			{
 				_Animator = GetComponentInChildren<Animator>();
 			}
+			if( _BoxCollider == null )
+			{
+				_BoxCollider = GetComponentInChildren<BoxCollider2D>();
+			}
 			if( _CharacterAnimationEventReceiver == null )
 			{
 				_CharacterAnimationEventReceiver = GetComponentInChildren<CharacterAnimationEventReceiver>();
-			}
-			if( _CharacterColliderContainer == null )
-			{
-				_CharacterColliderContainer = GetComponentInChildren<CharacterColliderContainer2D>();
 			}
 			
 
@@ -404,21 +404,22 @@ namespace Ptk
 			}
 
 		}
-		private void OnTriggerEnter2D( Collider2D collision )
+		protected override void OnTriggerEnter2D( Collider2D collision )
 		{
+			base.OnTriggerEnter2D( collision );
 			if( collision == null ){ return; }
-			Log.Info( $"OnTriggerEnter2D collider = {collision.name}" );
 
+			// TODO ここではなくて 攻撃を受けた側の Entity もしくは Ability に処理させること
 			var entity = collision.GetComponentInParent< Entity >();
 			if( entity != null )
 			{
 				entity.Damage( 1 );
 			}
 		}
-		private void OnTriggerExit2D( Collider2D collision )
+		protected override void OnTriggerExit2D( Collider2D collision )
 		{
+			base.OnTriggerExit2D( collision );
 			if( collision == null ){ return; }
-			Log.Info( $"OnTriggerExit2D collider = {collision.name}" );
 		}
 
 		public void OnBeginAttackHit( AnimationEvent animationEvent )

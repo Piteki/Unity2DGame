@@ -39,9 +39,9 @@ namespace Ptk
 		protected override void OnExecuted()
 		{
 			base.OnExecuted();
-			     
- 			if ( CharaController == null ) { Finish(); return; }
- 			if ( CharaController.Animator == null ) { Finish(); return; }
+				 
+			if ( CharaController == null ) { Finish(); return; }
+			if ( CharaController.Animator == null ) { Finish(); return; }
 			
 			CharaController.Animator.Play( CharacterController2D.AnimatorHash_NormalAttack );
 		}
