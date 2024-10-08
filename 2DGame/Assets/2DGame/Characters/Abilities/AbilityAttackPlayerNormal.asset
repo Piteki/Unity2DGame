@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: AbilityAttack
-  m_EditorClassIdentifier: Assembly-CSharp:Ptk:AbilityDataAttack
+  m_Script: {fileID: 11500000, guid: a56a87e860fc18d409ed600583060a2e, type: 3}
+  m_Name: AbilityAttackPlayerNormal
+  m_EditorClassIdentifier: 
   _AutoExecute: 0
   _RestartWhenExecuting: 0
   _BaseDamage: 1
