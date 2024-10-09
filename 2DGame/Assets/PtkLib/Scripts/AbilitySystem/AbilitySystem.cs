@@ -122,6 +122,27 @@ namespace Ptk.AbilitySystems
 			return _AbilityInstances.Find( ability => ability is T ) as T;
 		}
 
+		/// <summary>
+		/// アビリティ 所持チェック
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public bool HasAbility< T >() where T : AbilityBase
+		{
+			return GetAbility< T >() != null;
+		}
+
+		/// <summary>
+		/// アビリティ 発動中チェック
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public bool IsExecuting< T >() where T : AbilityBase
+		{
+			var ability = GetAbility< T >();
+			return ability != null ? ability.IsExecuting : false;
+		}
+
 #if UNITY_EDITOR
 
 		[CustomEditor(typeof(AbilitySystem), true)]

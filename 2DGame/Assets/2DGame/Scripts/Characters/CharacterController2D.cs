@@ -288,12 +288,17 @@ namespace Ptk
 		private void Update()
 		{
 			CheckGround();
+			UpdateSprite();
 			UpdateAnimatorParameter();
 		}
 
 		private void UpdateSprite()
 		{
 			if( _SpriteRenderer == null ){ return; }
+
+			if( AbilitySystem != null 
+			 && AbilitySystem.IsExecuting< AbilityAttack >()
+			){ return; }
 
 			if( IsMoving )
 			{
@@ -377,8 +382,6 @@ namespace Ptk
 			{
 				IsMoving = 0 < Mathf.Abs(mMoveInput.x);
 			}
-
-			UpdateSprite();
 		}
 
 		public void OnJumpInput(InputAction.CallbackContext context)
