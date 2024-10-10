@@ -154,4 +154,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _BodyColliders:
   - {fileID: 2280604083023278225}
+  _BreakEffect:
+    m_AssetGUID: 5278fe9d40f8e434ba9e468da29e414f
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   _MaxHealth: 1

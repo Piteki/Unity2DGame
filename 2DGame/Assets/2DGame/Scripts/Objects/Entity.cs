@@ -7,6 +7,8 @@ using UnityEngine.Rendering;
 using System.Linq;
 using Unity.Logging;
 using System;
+using UnityEngine.AddressableAssets;
+
 
 
 
@@ -24,6 +26,7 @@ namespace Ptk
 
 		[SerializeField] private List<Collider2D> _BodyColliders;
 
+		[SerializeField] private AssetReferenceGameObject _BreakEffect;
 
 		[SerializeField] private float _MaxHealth = 1;
 
@@ -38,6 +41,11 @@ namespace Ptk
 
 		protected virtual void OnDestroy()
 		{
+			if( _BreakEffect != null 
+			 && _BreakEffect.IsValid()
+			){
+				_BreakEffect.ReleaseAsset();
+			}
 		}
 
 		protected virtual void OnEnable()
@@ -48,6 +56,15 @@ namespace Ptk
 		protected virtual void OnDisable()
 		{
 			EntityColliders.RemoveEntity(this);
+		}
+
+		protected virtual void Start()
+		{
+			if( _BreakEffect != null
+			 && _BreakEffect.RuntimeKeyIsValid()
+			){
+				_BreakEffect.LoadAssetAsync();
+			}
 		}
 
 		public virtual void ResetStatus()
@@ -68,7 +85,13 @@ namespace Ptk
 		public virtual void BreakUp()
 		{
 			if( gameObject == null ){ return; }
-			Destroy( gameObject, 0.5f );
+
+			if( _BreakEffect != null 
+			 && _BreakEffect.RuntimeKeyIsValid()
+			){
+				_BreakEffect.InstantiateAsync( transform.position, transform.rotation );
+			}
+			Destroy( gameObject, 0.1f );
 		}
 
 		protected virtual void OnTriggerEnter2D( Collider2D collision )
