@@ -82,8 +82,9 @@ namespace Ptk
 	static public class IdStringDic
 	{
 		static private bool sIsInitialized;
-		static private Dictionary< string, IdString > sIdStringDic = new();
 		static private List< IdString > sIdStringList = new();
+		static private Dictionary< string, IdString > sIdStringDic = new();
+		static private Dictionary< Type, IdString > sTypeStringDic = new();
 
 		static public IdString GetByString( string str )
 		{
@@ -120,73 +121,38 @@ namespace Ptk
 		   // if( sIsInitialized ) { return; } 
 			sIsInitialized = true;
 
-			sIdStringDic.Clear();
 			sIdStringList.Clear();
+			sIdStringDic.Clear();
+			sTypeStringDic.Clear();
 
-			var list = new List< string >();  
 			var sw = new System.Diagnostics.Stopwatch();
 			sw.Start();
-			//foreach( var attributeO in Attribute.GetCustomAttributes( typeof(IdStringDefinitionClassAttribute) ) {
-			//{
-			//        attributeO.
-			//}
-			
 
-			var propertyBindFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-			var FieldBindFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-#if false
-			foreach( var assembly in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				foreach( var type in assembly.GetTypes() )
-				{
-					// TODO ここでぐるぐる回って 親属性をたどる
-					// TODO でも非効率なのでいったん class Type だけ出して処理したほうがよさそう
-					var hierarchyName = type.Name;
-					var parentType = type.ReflectedType;
-					while( parentType != null )
-					{
-						hierarchyName = $"{parentType.Name}.{hierarchyName}";
-						parentType = parentType.ReflectedType;
-					}
-					//UnityEngine.Debug.Log( $"hierarchyName = {hierarchyName}" );
-#else
-			// ↑を事前に済ますタイプ
-			var typedic = new Dictionary< Type, Tuple< string, Assembly, IdStringDefinitionClassAttribute > >();
+			var memberBindFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+			memberBindFlags |= BindingFlags.SetField;
+			memberBindFlags |= BindingFlags.SetProperty;
+			memberBindFlags |= BindingFlags.DeclaredOnly;
+
+			// DefinitionType を検索
+			var typedic = new Dictionary< Type, Tuple< string, Assembly, IdStringDefinitionTypeAttribute > >();
 			foreach( var assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
 				foreach( var type in assembly.GetTypes() )
 				{
 					if( typedic.ContainsKey( type ) )
 					{
-						IdStringDic.LogWarning( $"IdString included type already exist. type: {type.FullName}, Assembly: {assembly.FullName}" );
+						IdStringDic.LogWarning( $"IdString IdStringDefinitionTypeAttribute type already exist. type: {type.FullName}, Assembly: {assembly.FullName}" );
 						continue;
 					}
 
-					bool hasAttr = false;
+					var typeAttr = type.GetCustomAttribute<IdStringDefinitionTypeAttribute>();
+					if( typeAttr == null ){ continue; }
+
+					if( type.IsGenericType )
 					{
-						foreach( var propertyInfo in type.GetProperties( propertyBindFlags ) )
-						{
-							var attr = propertyInfo.GetCustomAttribute<IdStringAttribute>();
-							if( attr == null ){ continue; }
-							hasAttr = true; 
-							break;
-						}
+						IdStringDic.LogError( $"IdString IdStringDefinitionTypeAttribute type is generic type. type: {type.FullName}, Assembly: {assembly.FullName}" );
+						continue;
 					}
-
-					if( !hasAttr )
-					{
-						foreach( var firldInfo in type.GetFields( FieldBindFlags ) )
-						{
-							var attr = firldInfo.GetCustomAttribute<IdStringAttribute>();
-							if( attr == null ){ continue; }
-							hasAttr = true; 
-							break;
-						}
-					}
-
-					if( !hasAttr ){ continue; }
-
-					var classAttr = type.GetCustomAttribute<IdStringDefinitionClassAttribute>();
 
 					var hierarchyName = type.Name;
 					var parentType = type.ReflectedType;
@@ -195,69 +161,65 @@ namespace Ptk
 						hierarchyName = $"{parentType.Name}.{hierarchyName}";
 						parentType = parentType.ReflectedType;
 					}
-					UnityEngine.Debug.Log( $"hierarchyName = {hierarchyName}" );
-					typedic.Add( type, Tuple.Create( hierarchyName, assembly, classAttr ) );
+					typedic.Add( type, Tuple.Create( hierarchyName, assembly, typeAttr ) );
 
 				}
 			}
 
 			UnityEngine.Debug.Log( $" Initialize sprit {sw.Elapsed.TotalSeconds} sec." );
 
+			foreach( var pair in typedic )
 			{
-				foreach( var pair in typedic )
+				var type = pair.Key;
+				var hierarchyName = pair.Value.Item1;
+				var assembly = pair.Value.Item2;
+				var classAttr = pair.Value.Item3;
+
+				// TODO HierarchyName をオプションで制御
+				// TODO namespace 付与オプションを追加
+				// TODO name オプション指定機能追加
+				// TODO 階層構造を解析可能な辞書を追加
+
+				// DefinitionType 自体を登録
+				{ 
+					var id = sIdStringList.Count + 1;
+					var idString = new IdString( hierarchyName, id );
+					sIdStringList.Add( idString );
+					sIdStringDic.Add( hierarchyName, idString );
+					sTypeStringDic.Add( type, idString );
+				} 
+
+				foreach( var memberInfo in type.GetMembers( memberBindFlags ) )
 				{
-					var type = pair.Key;
-					var hierarchyName = pair.Value.Item1;
-					var assembly = pair.Value.Item2;
-					var classAttr = pair.Value.Item3;
-#endif
-					foreach( var propertyInfo in type.GetProperties( propertyBindFlags ) )
+					var attr = memberInfo.GetCustomAttribute<IdStringAttribute>();
+					if( attr == null ){ continue; }
+
+					var name = $"{hierarchyName}.{memberInfo.Name}";
+					if( sIdStringDic.ContainsKey( name ) ){ continue; }
+
+					var id = sIdStringList.Count + 1;
+					var idString = new IdString( name, id );
+
+					try
 					{
-						var attr = propertyInfo.GetCustomAttribute<IdStringAttribute>();
-						if( attr == null ){ continue; }
-
-						var refName = string.Empty;
-						//switch( attr. )
-						//{
-						//    case 
-						//}
-						//refName = propertyInfo.ReflectedType.FullName; // namespace included
-						//var refName = propertyInfo.ReflectedType.Name; // namespace exclude
-						refName = hierarchyName;
-						var name = $"{refName}.{propertyInfo.Name}";
-						if( sIdStringDic.ContainsKey( name ) ){ continue; }
-						var id = sIdStringList.Count + 1;
-						var idString = new IdString( name, id );
-						sIdStringList.Add( idString );
-						sIdStringDic.Add( name, idString );
-
-						//var setter = propertyInfo.GetSetMethod(true);
-						//if( setter != null )
-						//{
-						//    setter.Invoke( null, new object[]{idString } );
-						//}
-						try
+						if( memberInfo is PropertyInfo propertyInfo )
 						{
 							propertyInfo.SetValue( null, idString );
 						}
-						catch( Exception exception )
+						else if ( memberInfo is FieldInfo fieldInfo )
 						{
-							IdStringDic.LogError( $"IdString SetValue Failed. property name: {name}, Assembly: {assembly.FullName}\nException: {exception.GetType().Name} Message: {exception.Message}" );
+							fieldInfo.SetValue( null, idString );
 						}
+						sIdStringList.Add( idString );
+						sIdStringDic.Add( name, idString );
+						UnityEngine.Debug.Log( $"{idString.Id} : {idString}" );
+					}
+					catch( Exception exception )
+					{
+						IdStringDic.LogError( $"IdString SetValue Failed. name: {name}, Assembly: {assembly.FullName}\nException: {exception.GetType().Name} Message: {exception.Message}" );
 					}
 
 				}
-				//foreach (var attribute in assembly.GetCustomAttributes<IdStringAttribute>())
-				//{
-				//    try
-				//    {
-				//            attribute.
-				//    }
-				//    catch (Exception exception)
-				//    {
-				//        IdStringDic.LogError($"Failed to register tag {attribute.TagName} from assembly {assembly.FullName} with error: {exception.Message}");
-				//    }
-				//}
 			}
 
 			sw.Stop();
@@ -278,6 +240,10 @@ namespace Ptk
 			UnityEngine.Debug.Log( $"SampleBBB.BbB     = {SampleBBB.BbB.Id} : {SampleBBB.BbB.ToString()}" );
 			UnityEngine.Debug.Log( $"SampleBBB.TestStr = {SampleBBB.TestStr.Id} : {SampleBBB.TestStr.ToString()}" );
 			UnityEngine.Debug.Log( $"SampleBBB.FFFRDO = {SampleBBB.FFFRDO.Id} : {SampleBBB.FFFRDO.ToString()}" );
+
+			UnityEngine.Debug.Log( $"SampleStructDerived.StruGGGDDDD = {SampleStructDerived.StruGGGDDDD.Id} : {SampleStructDerived.StruGGGDDDD.ToString()}" );
+			UnityEngine.Debug.Log( $"ISampleItf.Itfffff = {ISampleItf.Itfffff.Id} : {ISampleItf.Itfffff.ToString()}" );
+
 		}
 
 	}
@@ -289,8 +255,8 @@ namespace Ptk
 		FullName = 2,
 	}
 
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-	public class IdStringDefinitionClassAttribute : Attribute
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface,  AllowMultiple = false)]
+	public class IdStringDefinitionTypeAttribute : Attribute
 	{
 		public EIdStringParentNameType ParentName { get; set; } = EIdStringParentNameType.FullName;
 		
@@ -302,7 +268,7 @@ namespace Ptk
 
 	}
 
-	[IdStringDefinitionClass()]
+	[IdStringDefinitionType()]
 	static public class Sample
 	{
 		[IdString]
@@ -315,13 +281,35 @@ namespace Ptk
 		static private IdString BbB { get; set; }
 	}
 
+	[IdStringDefinitionType]
 	public class SampleDerivrd : SampleBBB
 	{
 		[IdString]
 		static public IdString DerivedDDDD { get; private set; }
 	}
 
+
+	[IdStringDefinitionType]
+	public struct SampleStruct
+	{
+		[IdString]
+		static public IdString StructTTTT { get; private set; }
+	}
+	[IdStringDefinitionType]
+	public interface ISampleItf
+	{
+		[IdString]
+		static public IdString Itfffff { get; private set; }
+	}
+	[IdStringDefinitionType]
+	public struct SampleStructDerived : ISampleItf
+	{
+		[IdString]
+		static public IdString StruGGGDDDD { get; private set; }
+	}
+
 	// ※ Generic 型には使用できない -> exception: InvalidOperationException, error: Late bound operations cannot be performed on types or methods for which ContainsGenericParameters is true.
+	[IdStringDefinitionType]
 	public class GenSample< T >
 	{
 		[IdString]
@@ -329,6 +317,7 @@ namespace Ptk
 	}
 
 	// ※ Generic 型には使用できない -> exception: InvalidOperationException, error: Late bound operations cannot be performed on types or methods for which ContainsGenericParameters is true.
+	[IdStringDefinitionType]
 	public class GenSampleWhere< TClass >
 		where TClass : class
 	{
@@ -337,6 +326,7 @@ namespace Ptk
 	}
 
 	// ※ Generic 型には使用できない -> exception: InvalidOperationException, error: Late bound operations cannot be performed on types or methods for which ContainsGenericParameters is true.
+	[IdStringDefinitionType]
 	public class GenSampleWhereSt< TStruct >
 		where TStruct : struct
 	{
@@ -346,7 +336,7 @@ namespace Ptk
 
 
 
-	[IdStringDefinitionClass]
+	[IdStringDefinitionType]
 	public class SampleBBB
 	{
 		// ※ setter がない property には使用できない -> exception: ArgumentException, error: Set Method not found for 'TestStr'
@@ -359,11 +349,12 @@ namespace Ptk
 		[IdString]
 		public static IdString BbB { get; private set; }
 
+		[IdString]
 		public static readonly IdString FFFRDO;
 	}
 
 	
-	[IdStringDefinitionClass]
+	[IdStringDefinitionType]
 	public static class SampleCCCC
 	{
 		public static class Child
@@ -377,6 +368,7 @@ namespace Ptk
 			[IdString]
 			public static IdString BbB { get; private set; }
 
+			[IdString]
 			public static readonly IdString FFFRDO;
 		}
 
