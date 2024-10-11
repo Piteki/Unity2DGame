@@ -236,6 +236,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _BodyColliders:
   - {fileID: 432338743337092174}
+  _BreakEffect:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectGUID: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   _MaxHealth: 1
   _SpriteRenderer: {fileID: 7598988403906053334}
   _Animator: {fileID: 4641373296735236442}
