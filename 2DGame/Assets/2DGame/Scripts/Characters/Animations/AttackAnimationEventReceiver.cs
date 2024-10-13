@@ -13,8 +13,6 @@ namespace Ptk
 		public event Action<AnimationEvent> EventBeginAttackHit;
 		public event Action<AnimationEvent> EventEndAttackHit;
 
-		public event Action<AnimationEvent> EventStep;
-
 		public readonly HashSet<IAttackAnimationEventListener> mListeners = new();
 		public readonly List<IAttackAnimationEventListener> mTmpListeners = new();
 
