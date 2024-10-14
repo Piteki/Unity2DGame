@@ -164,12 +164,13 @@ namespace Ptk.IdStrings
 			sStringAttrDataDic.Clear();
 			sTypeAttrDataDic.Clear();
 			sAttrDataRoots.Clear();
-
+			
 			// add none 
 			sIdStringAttrList.Add( new IdStringAttrData()
 			{
 				Description = null,
 				AttrName = "None",
+				HasHideInInspectorAttribute = false,
 				ParentNameType = EIdStringParentNameType.None,
 				NamespaceType = EIdStringNamespaceType.None,
 
@@ -216,6 +217,7 @@ namespace Ptk.IdStrings
 							return parent; 
 						}
 
+						var hideInInspectorAttr = type.GetCustomAttribute<HideInInspector>();
 
 						string parentPath = null;
 						if( parent != null )
@@ -228,11 +230,13 @@ namespace Ptk.IdStrings
 						{
 							Description = typeAttr.Description,
 							AttrName = typeAttr.Name,
+							HasHideInInspectorAttribute = hideInInspectorAttr != null,
 							ParentNameType = typeAttr.ParentNameType,
 							NamespaceType = typeAttr.NamespaceType,
 
 							MemberName = type.Name,
 							ParentPath = parentPath,
+							IsHideInInspector = false,
 						};
 
 						if( parent != null )
@@ -280,9 +284,12 @@ namespace Ptk.IdStrings
 				string parentString = parentParentFullPath;
 				AppendPath( ref parentString, parentTypeAttrData.ElementName );
 
+				var parentHideInInspector = parentTypeAttrData.GetIsHideInInspector();
+
 				var parentTypeIdString = new IdString( parentString, sIdStringAttrList.Count );
 				parentTypeAttrData.IdString = parentTypeIdString;
 				parentTypeAttrData.ParentFullPath = parentParentFullPath;
+				parentTypeAttrData.IsHideInInspector = parentHideInInspector;
 
 				sIdStringAttrList.Add( parentTypeAttrData );
 				sStringAttrDataDic.Add( parentString, parentTypeAttrData );
@@ -307,6 +314,8 @@ namespace Ptk.IdStrings
 
 					var attr = memberInfo.GetCustomAttribute<IdStringAttribute>();
 					if( attr == null ){ continue; }
+
+					var hideInInspectorAttr = memberInfo.GetCustomAttribute<HideInInspector>();
 
 					var parentFullPath = string.Empty;
 					var namespaceType = attr.NamespaceType != EIdStringNamespaceType.UseParentSetting
@@ -335,15 +344,19 @@ namespace Ptk.IdStrings
 					if( !exists )
 					{
 						var idString = new IdString( name, sIdStringAttrList.Count );
+						bool hasHideInInspector = hideInInspectorAttr != null;
 						attrData = new IdStringAttrData()
 						{
 							Description = attr.Description,
 							AttrName = attr.Name,
+							HasHideInInspectorAttribute = hasHideInInspector,
 							ParentNameType = attr.ParentNameType,
 							NamespaceType = attr.NamespaceType,
 
 							MemberName = memberInfo.Name,
 							ParentPath = parentString,
+
+							IsHideInInspector = parentHideInInspector || hasHideInInspector,
 
 							ParentFullPath = parentFullPath,
 

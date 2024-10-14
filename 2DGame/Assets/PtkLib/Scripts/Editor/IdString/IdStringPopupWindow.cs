@@ -106,6 +106,7 @@ namespace Ptk.IdStrings.Editor
 			foreach( var attrData in IdStringManager.GetAllElements() )
 			{
 				if( attrData == null ){ continue; }
+				if( attrData.IsHideInInspector ) { continue; }
 				items.Add(new IdStringTreeViewItem(attrData.IdString, attrData.ElementName, attrData.Hierarchy.Depth ));
 			}
 

@@ -60,6 +60,7 @@ namespace Ptk.IdStrings
 
 		public string Description { get; set; }
 		public string AttrName { get; set; }
+		public bool HasHideInInspectorAttribute { get; set; }
 		public EIdStringParentNameType ParentNameType { get; set; } = EIdStringParentNameType.UseParentSetting;
 		public EIdStringNamespaceType NamespaceType { get; set; } = EIdStringNamespaceType.UseParentSetting;
 
@@ -69,6 +70,7 @@ namespace Ptk.IdStrings
 		public string ElementName => !string.IsNullOrEmpty( AttrName ) ? AttrName : MemberName;
 		public string ParentFullPath { get; set; }
 
+		public bool IsHideInInspector { get; set; }
 		
 
 		public IdString IdString { get; set; }
@@ -106,6 +108,22 @@ namespace Ptk.IdStrings
 			return value;
 		}
 
+		public bool GetIsHideInInspector()
+		{
+			bool value = HasHideInInspectorAttribute;
+			var elem = this;
+			while( !value )
+			{
+				elem = elem.Hierarchy.Parent as IdStringAttrData;
+				if( elem == null )
+				{
+					value = false;
+					break;
+				}
+				value = elem.HasHideInInspectorAttribute;
+			}
+			return value;
+		}
 	}
 
 }

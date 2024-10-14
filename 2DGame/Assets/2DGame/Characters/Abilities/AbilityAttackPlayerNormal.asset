@@ -16,5 +16,5 @@ MonoBehaviour:
   _RestartWhenExecuting: 0
   _BaseDamage: 1
   _OwnTag:
-    mFullName: AbilityTag.Attack.NNNNoooo
+    mFullName: AbilityTag.Attack.Normal
   _NextProperty: 1
