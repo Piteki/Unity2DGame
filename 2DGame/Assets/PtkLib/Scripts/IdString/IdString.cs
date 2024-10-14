@@ -47,7 +47,7 @@ namespace Ptk.IdStrings
 			get{
 				var attrData = AttrData;
 				if( attrData == null ){ return null; }
-				return attrData.Description;
+				return attrData.Attribute?.Description;
 			}
 		}
 

@@ -52,7 +52,7 @@ namespace Ptk.IdStrings.Editor
 					{
 						strText += $" ({attrData.ParentFullPath})";
 					}
-					strTooltip = attrData.Description; 
+					strTooltip = attrData.Attribute?.Description; 
 				}
 				sTmp.text = strText;
 				sTmp.tooltip = strTooltip;

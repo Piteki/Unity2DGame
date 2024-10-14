@@ -168,14 +168,18 @@ namespace Ptk.IdStrings
 			// add none 
 			sIdStringAttrList.Add( new IdStringAttrData()
 			{
-				Description = null,
-				AttrName = "None",
-				HasHideInInspectorAttribute = false,
-				ParentNameType = EIdStringParentNameType.None,
-				NamespaceType = EIdStringNamespaceType.None,
+				Attribute = new IdStringAttribute()
+				{
+					Description = null,
+					Name = "None",
+					HideInViewer = false,
+					ParentNameType = EIdStringParentNameType.None,
+					NamespaceType = EIdStringNamespaceType.None,
+				},
 
 				MemberName = null,
 				ParentPath = null,
+				IsHideInViewer = false,
 
 				IdString = IdString.None,
 			});
@@ -217,8 +221,6 @@ namespace Ptk.IdStrings
 							return parent; 
 						}
 
-						var hideInInspectorAttr = type.GetCustomAttribute<HideInInspector>();
-
 						string parentPath = null;
 						if( parent != null )
 						{
@@ -228,15 +230,11 @@ namespace Ptk.IdStrings
 
 						attrData = new IdStringAttrData()
 						{
-							Description = typeAttr.Description,
-							AttrName = typeAttr.Name,
-							HasHideInInspectorAttribute = hideInInspectorAttr != null,
-							ParentNameType = typeAttr.ParentNameType,
-							NamespaceType = typeAttr.NamespaceType,
+							Attribute = typeAttr,
 
 							MemberName = type.Name,
 							ParentPath = parentPath,
-							IsHideInInspector = false,
+							IsHideInViewer = false,
 						};
 
 						if( parent != null )
@@ -284,12 +282,12 @@ namespace Ptk.IdStrings
 				string parentString = parentParentFullPath;
 				AppendPath( ref parentString, parentTypeAttrData.ElementName );
 
-				var parentHideInInspector = parentTypeAttrData.GetIsHideInInspector();
+				var parentHideInViewer = parentTypeAttrData.GetIsHideInViewer();
 
 				var parentTypeIdString = new IdString( parentString, sIdStringAttrList.Count );
 				parentTypeAttrData.IdString = parentTypeIdString;
 				parentTypeAttrData.ParentFullPath = parentParentFullPath;
-				parentTypeAttrData.IsHideInInspector = parentHideInInspector;
+				parentTypeAttrData.IsHideInViewer = parentHideInViewer;
 
 				sIdStringAttrList.Add( parentTypeAttrData );
 				sStringAttrDataDic.Add( parentString, parentTypeAttrData );
@@ -314,8 +312,6 @@ namespace Ptk.IdStrings
 
 					var attr = memberInfo.GetCustomAttribute<IdStringAttribute>();
 					if( attr == null ){ continue; }
-
-					var hideInInspectorAttr = memberInfo.GetCustomAttribute<HideInInspector>();
 
 					var parentFullPath = string.Empty;
 					var namespaceType = attr.NamespaceType != EIdStringNamespaceType.UseParentSetting
@@ -344,19 +340,15 @@ namespace Ptk.IdStrings
 					if( !exists )
 					{
 						var idString = new IdString( name, sIdStringAttrList.Count );
-						bool hasHideInInspector = hideInInspectorAttr != null;
+
 						attrData = new IdStringAttrData()
 						{
-							Description = attr.Description,
-							AttrName = attr.Name,
-							HasHideInInspectorAttribute = hasHideInInspector,
-							ParentNameType = attr.ParentNameType,
-							NamespaceType = attr.NamespaceType,
+							Attribute = attr,
 
 							MemberName = memberInfo.Name,
 							ParentPath = parentString,
 
-							IsHideInInspector = parentHideInInspector || hasHideInInspector,
+							IsHideInViewer = parentHideInViewer || attr.HideInViewer,
 
 							ParentFullPath = parentFullPath,
 

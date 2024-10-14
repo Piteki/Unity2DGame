@@ -20,6 +20,7 @@ namespace Ptk.IdStrings
 	{
 		public string Description { get; set; }
 		public string Name { get; set; }
+		public bool HideInViewer { get; set; }
 		public EIdStringParentNameType ParentNameType { get; set; } = EIdStringParentNameType.UseParentSetting;
 		public EIdStringNamespaceType NamespaceType { get; set; } = EIdStringNamespaceType.UseParentSetting;
 	}
@@ -58,26 +59,23 @@ namespace Ptk.IdStrings
 		public static EIdStringParentNameType DefaultParentNameType = EIdStringParentNameType.FullName;
 		public static EIdStringNamespaceType DefaultNamespaceType = EIdStringNamespaceType.None;
 
-		public string Description { get; set; }
-		public string AttrName { get; set; }
-		public bool HasHideInInspectorAttribute { get; set; }
-		public EIdStringParentNameType ParentNameType { get; set; } = EIdStringParentNameType.UseParentSetting;
-		public EIdStringNamespaceType NamespaceType { get; set; } = EIdStringNamespaceType.UseParentSetting;
+		public IdStringAttribute Attribute { get; set; }
 
 		public string MemberName { get; set; }
 		public string ParentPath { get; set; }
 
-		public string ElementName => !string.IsNullOrEmpty( AttrName ) ? AttrName : MemberName;
+		public string ElementName => !string.IsNullOrEmpty( Attribute?.Name ) ? Attribute.Name : MemberName;
 		public string ParentFullPath { get; set; }
 
-		public bool IsHideInInspector { get; set; }
+		public bool IsHideInViewer { get; set; }
 		
 
 		public IdString IdString { get; set; }
 
 		public EIdStringParentNameType GetParentNameType()
 		{
-			var value = ParentNameType;
+
+			var value = Attribute != null ? Attribute.ParentNameType : EIdStringParentNameType.UseParentSetting;
 			var elem = this;
 			while( value == EIdStringParentNameType.UseParentSetting )
 			{
@@ -87,13 +85,13 @@ namespace Ptk.IdStrings
 					value = DefaultParentNameType;
 					break;
 				}
-				value = elem.ParentNameType;
+				value = elem.Attribute != null ? elem.Attribute.ParentNameType : EIdStringParentNameType.UseParentSetting;
 			}
 			return value;
 		}
 		public EIdStringNamespaceType GetNamespaceType()
 		{
-			var value = NamespaceType;
+			var value = Attribute != null ? Attribute.NamespaceType : EIdStringNamespaceType.UseParentSetting;
 			var elem = this;
 			while( value == EIdStringNamespaceType.UseParentSetting )
 			{
@@ -103,14 +101,14 @@ namespace Ptk.IdStrings
 					value = DefaultNamespaceType;
 					break;
 				}
-				value = elem.NamespaceType;
+				value = elem.Attribute != null ? elem.Attribute.NamespaceType : EIdStringNamespaceType.UseParentSetting;
 			}
 			return value;
 		}
 
-		public bool GetIsHideInInspector()
+		public bool GetIsHideInViewer()
 		{
-			bool value = HasHideInInspectorAttribute;
+			bool value = Attribute != null ? Attribute.HideInViewer : false;
 			var elem = this;
 			while( !value )
 			{
@@ -120,7 +118,7 @@ namespace Ptk.IdStrings
 					value = false;
 					break;
 				}
-				value = elem.HasHideInInspectorAttribute;
+				value = elem.Attribute != null ? elem.Attribute.HideInViewer : false;
 			}
 			return value;
 		}

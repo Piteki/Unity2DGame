@@ -106,7 +106,7 @@ namespace Ptk.IdStrings.Editor
 			foreach( var attrData in IdStringManager.GetAllElements() )
 			{
 				if( attrData == null ){ continue; }
-				if( attrData.IsHideInInspector ) { continue; }
+				if( attrData.IsHideInViewer ) { continue; }
 				items.Add(new IdStringTreeViewItem(attrData.IdString, attrData.ElementName, attrData.Hierarchy.Depth ));
 			}
 
@@ -172,7 +172,7 @@ namespace Ptk.IdStrings.Editor
 			var idStringFullName = idString != IdString.None ? idString.FullName : null;
 
 			sTmp.text = hasSearch && idString != IdString.None ? idStringFullName : args.label;
-			sTmp.tooltip = attrData == null ? null : attrData.Description;
+			sTmp.tooltip = attrData?.Attribute?.Description;
 			if( GUI.Button( rect, sTmp, EditorStyles.label ) )
 			{
 				mProperty.stringValue = idStringFullName;
