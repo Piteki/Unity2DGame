@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace Ptk.IdString
+namespace Ptk.IdStrings
 {
 	/// <summary>
 	/// IdString Manager
@@ -17,7 +17,6 @@ namespace Ptk.IdString
 		static private bool sIsInitialized;
 
 		static private List< IdStringAttrData > sIdStringAttrList = new();
-		static private Dictionary< IdString, IdStringAttrData > sIdAttrDataDic = new();
 		static private Dictionary< string, IdStringAttrData > sStringAttrDataDic = new();
 		static private Dictionary< Type, IdStringAttrData > sTypeAttrDataDic = new();
 		static private List< IdStringAttrData > sAttrDataRoots = new();
@@ -31,7 +30,10 @@ namespace Ptk.IdString
 		{
 			if( !TryGetByName( name, out var idString ) )
 			{
-				IdStringManager.LogWarning( $"IdString not registered. ({name})" );
+				if( !string.IsNullOrEmpty(name) )
+				{
+					IdStringManager.LogWarning( $"IdString not registered. ({name})" );
+				}
 			}
 			return idString;
 		}
@@ -45,7 +47,8 @@ namespace Ptk.IdString
 		static public bool TryGetByName( string name, out IdString idString )
 		{
 			Initialize();
-			if( !sStringAttrDataDic.TryGetValue( name, out var attrData ) )
+			if( string.IsNullOrEmpty(name)
+			 || !sStringAttrDataDic.TryGetValue( name, out var attrData ) )
 			{
 				idString = IdString.None;
 				return false;
@@ -107,6 +110,29 @@ namespace Ptk.IdString
 			return true;
 		}
 
+		static internal IdStringAttrData GetAttrData( in IdString idString )
+		{
+			int idx = Mathf.Max( 0, idString.Id );
+			if( sIdStringAttrList.Count <= idx )
+			{ 
+				LogError( $"Invalid idString id:{idString.Id} name:{idString.FullName}" );
+				return null; 
+			}
+			return sIdStringAttrList[idx];
+		}
+
+		static internal List<IdStringAttrData> GetAllElements()
+		{
+			Initialize();
+			return sIdStringAttrList;
+		}
+
+		static internal List<IdStringAttrData> GetRootElements()
+		{
+			Initialize();
+			return sAttrDataRoots;
+		}
+
 		static private void LogWarning( string msg )
 		{
 			UnityEngine.Debug.LogWarning( msg );
@@ -131,14 +157,27 @@ namespace Ptk.IdString
 		    if( sIsInitialized ) { return; } 
 			sIsInitialized = true;
 
+			var sw = new System.Diagnostics.Stopwatch();
+			sw.Start();
+
 			sIdStringAttrList.Clear();
-			sIdAttrDataDic.Clear();
 			sStringAttrDataDic.Clear();
 			sTypeAttrDataDic.Clear();
 			sAttrDataRoots.Clear();
 
-			var sw = new System.Diagnostics.Stopwatch();
-			sw.Start();
+			// add none 
+			sIdStringAttrList.Add( new IdStringAttrData()
+			{
+				Description = null,
+				AttrName = "None",
+				ParentNameType = EIdStringParentNameType.None,
+				NamespaceType = EIdStringNamespaceType.None,
+
+				MemberName = null,
+				ParentPath = null,
+
+				IdString = IdString.None,
+			});
 
 			var memberBindFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 			memberBindFlags |= BindingFlags.SetField;
@@ -181,23 +220,19 @@ namespace Ptk.IdString
 						string parentPath = null;
 						if( parent != null )
 						{
-							if( !string.IsNullOrEmpty( parent.ParentPath ) )
-							{
-								parentPath = $"{parent.ParentPath}.";
-							}
-							parentPath += parent.ElementName;
+							AppendPath( ref parentPath, parent.ParentPath );
+							AppendPath( ref parentPath, parent.ElementName );
 						}
 
 						attrData = new IdStringAttrData()
 						{
 							Description = typeAttr.Description,
-							Name = typeAttr.Name,
+							AttrName = typeAttr.Name,
 							ParentNameType = typeAttr.ParentNameType,
 							NamespaceType = typeAttr.NamespaceType,
 
 							MemberName = type.Name,
 							ParentPath = parentPath,
-
 						};
 
 						if( parent != null )
@@ -225,32 +260,34 @@ namespace Ptk.IdString
 				
 
 				// DefinitionType 自体を登録
-				string parentString = string.Empty;
+				string parentParentFullPath = string.Empty;
 				string parentNamespace = string.Empty;
 				var parentNamespaceType = parentTypeAttrData.GetNamespaceType();
 				if( parentNamespaceType != EIdStringNamespaceType.None 
 				 && !string.IsNullOrEmpty( parentType.Namespace )
 				){
-					parentNamespace = $"{parentType.Namespace}.";
-					parentString = parentNamespace;
+					parentNamespace = parentType.Namespace;
+					parentParentFullPath = parentNamespace;
 				}
 				string parentPath = string.Empty;
 				var parentParentNameType = parentTypeAttrData.GetParentNameType();
 				if(	parentParentNameType != EIdStringParentNameType.None
 				 && !string.IsNullOrEmpty( parentTypeAttrData.ParentPath ) 
 				){
-					parentPath = $"{parentTypeAttrData.ParentPath}.";
-					parentString += parentPath;
+					parentPath = parentTypeAttrData.ParentPath;
+					AppendPath( ref parentParentFullPath, parentPath );
 				}
-				parentString += parentTypeAttrData.ElementName;
+				string parentString = parentParentFullPath;
+				AppendPath( ref parentString, parentTypeAttrData.ElementName );
 
-				var parentTypeIdString = new IdString( parentString, sIdStringAttrList.Count + 1 );
+				var parentTypeIdString = new IdString( parentString, sIdStringAttrList.Count );
 				parentTypeAttrData.IdString = parentTypeIdString;
+				parentTypeAttrData.ParentFullPath = parentParentFullPath;
+
 				sIdStringAttrList.Add( parentTypeAttrData );
-				sIdAttrDataDic.Add( parentTypeIdString, parentTypeAttrData );
 				sStringAttrDataDic.Add( parentString, parentTypeAttrData );
 
-				parentPath += parentTypeAttrData.ElementName + ".";
+				AppendPath( ref parentPath, parentTypeAttrData.ElementName );
 
 				foreach( var memberInfo in parentType.GetMembers( memberBindFlags ) )
 				{
@@ -271,14 +308,14 @@ namespace Ptk.IdString
 					var attr = memberInfo.GetCustomAttribute<IdStringAttribute>();
 					if( attr == null ){ continue; }
 
-					var pfx = string.Empty;
+					var parentFullPath = string.Empty;
 					var namespaceType = attr.NamespaceType != EIdStringNamespaceType.UseParentSetting
 									  ? attr.NamespaceType
 									  : parentNamespaceType;
 					if( namespaceType != EIdStringNamespaceType.None 
 					 && !string.IsNullOrEmpty( parentNamespace )
 					){
-						pfx = parentNamespace;
+						parentFullPath = parentNamespace;
 					}
 					var parentNameType = attr.ParentNameType != EIdStringParentNameType.UseParentSetting
 										? attr.ParentNameType
@@ -286,23 +323,29 @@ namespace Ptk.IdString
 					if(	parentNameType != EIdStringParentNameType.None
 					 && !string.IsNullOrEmpty( parentPath ) 
 					){
-						pfx += parentPath;
+						AppendPath( ref parentFullPath, parentPath );
 					}
 
-					var name = pfx + memberInfo.Name;
+					var elementName = !string.IsNullOrEmpty( attr.Name ) ? attr.Name : memberInfo.Name;
+
+					string name = parentFullPath;
+					AppendPath( ref name, elementName );
+
 					bool exists = sStringAttrDataDic.TryGetValue( name, out var attrData );
 					if( !exists )
 					{
-						var idString = new IdString( name, sIdStringAttrList.Count + 1 );
+						var idString = new IdString( name, sIdStringAttrList.Count );
 						attrData = new IdStringAttrData()
 						{
 							Description = attr.Description,
-							Name = attr.Name,
+							AttrName = attr.Name,
 							ParentNameType = attr.ParentNameType,
 							NamespaceType = attr.NamespaceType,
 
 							MemberName = memberInfo.Name,
 							ParentPath = parentString,
+
+							ParentFullPath = parentFullPath,
 
 							IdString = idString,
 
@@ -311,7 +354,6 @@ namespace Ptk.IdString
 						attrData.Hierarchy.SetParent(parentTypeAttrData);
 
 						sIdStringAttrList.Add( attrData );
-						sIdAttrDataDic.Add( attrData.IdString, attrData );
 						sStringAttrDataDic.Add( name, attrData );
 					}
 
@@ -334,9 +376,20 @@ namespace Ptk.IdString
 				}
 			}
 
-
 			sw.Stop();
 			UnityEngine.Debug.Log( $"IdString Initialized. {sw.Elapsed.TotalSeconds} sec." );
+		}
+
+		private static void AppendPath( ref string src, in string addString, in string separator = "." )
+		{
+			if( string.IsNullOrEmpty( addString ) )
+			{ return; }
+
+			if( !string.IsNullOrEmpty( src ) )
+			{
+				src += separator;
+			}
+			src += addString;
 		}
 
 		/// <summary>
@@ -348,6 +401,7 @@ namespace Ptk.IdString
 			UnityEngine.Debug.Log( " --- IdString Debug Print AllElements start ---------------------" );
 			foreach( var rootAttr in sAttrDataRoots )
 			{
+				if( rootAttr == null ){ continue; }
 				foreach( var node in rootAttr.Hierarchy )
 				{
 					var attr = node as IdStringAttrData;

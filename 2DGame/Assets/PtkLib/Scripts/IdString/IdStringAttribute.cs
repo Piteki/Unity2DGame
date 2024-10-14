@@ -1,6 +1,6 @@
 using System;
 
-namespace Ptk.IdString
+namespace Ptk.IdStrings
 {
 	/// <summary>
 	/// IdString Attribute
@@ -56,17 +56,19 @@ namespace Ptk.IdString
 	internal class IdStringAttrData : HierarchyNodeBase
 	{
 		public static EIdStringParentNameType DefaultParentNameType = EIdStringParentNameType.FullName;
-		public static EIdStringNamespaceType DefaultNamespaceType = EIdStringNamespaceType.FullName;
+		public static EIdStringNamespaceType DefaultNamespaceType = EIdStringNamespaceType.None;
 
 		public string Description { get; set; }
-		public string Name { get; set; }
+		public string AttrName { get; set; }
 		public EIdStringParentNameType ParentNameType { get; set; } = EIdStringParentNameType.UseParentSetting;
 		public EIdStringNamespaceType NamespaceType { get; set; } = EIdStringNamespaceType.UseParentSetting;
 
 		public string MemberName { get; set; }
 		public string ParentPath { get; set; }
 
-		public string ElementName => !string.IsNullOrEmpty( Name ) ? Name : MemberName;
+		public string ElementName => !string.IsNullOrEmpty( AttrName ) ? AttrName : MemberName;
+		public string ParentFullPath { get; set; }
+
 		
 
 		public IdString IdString { get; set; }

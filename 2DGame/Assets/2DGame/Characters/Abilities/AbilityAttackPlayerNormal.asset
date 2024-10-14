@@ -15,3 +15,6 @@ MonoBehaviour:
   _AutoExecute: 0
   _RestartWhenExecuting: 0
   _BaseDamage: 1
+  _OwnTag:
+    mFullName: AbilityTag.Attack.NNNNoooo
+  _NextProperty: 1

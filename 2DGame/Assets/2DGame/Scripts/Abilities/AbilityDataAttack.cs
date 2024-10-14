@@ -2,6 +2,7 @@
 using UnityEngine;
 using Unity.Logging;
 using Ptk.AbilitySystems;
+using Ptk.IdStrings;
 
 namespace Ptk
 {
@@ -10,6 +11,10 @@ namespace Ptk
 	public class AbilityDataAttack : AbilityData< AbilityAttack, AbilityDataAttack >
 	{
 		[SerializeField] private float _BaseDamage = 1;
+
+		[SerializeField] IdString _OwnTag;
+
+		[SerializeField] private float _NextProperty = 1;
 
 		public float BaseDamage => _BaseDamage;
 	}

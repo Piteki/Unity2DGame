@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace Ptk.IdString
+namespace Ptk.IdStrings
 {
 	/// <summary>
 	/// IdString
@@ -19,21 +19,47 @@ namespace Ptk.IdString
 	{
 		public static readonly IdString None = new();
 
-		public string Name => mName;
-		internal int Id => mId;
-
-		[SerializeField] private string mName;
+		[SerializeField] private string mFullName;
 		private int mId;
 
-		internal IdString( string name, int id )
+		public string FullName => mFullName;
+		internal int Id => mId;
+		internal IdStringAttrData AttrData => IdStringManager.GetAttrData( this );
+
+		public string ElementName
 		{
-			mName = name;
+			get{
+				var attrData = AttrData;
+				if( attrData == null ){ return null; }
+				return attrData.ElementName;
+			}
+		}
+		public int HierarchyLevel
+		{
+			get{
+				var attrData = AttrData;
+				if( attrData == null ){ return 0; }
+				return attrData.Hierarchy.Depth;
+			}
+		}
+		public string Description
+		{
+			get{
+				var attrData = AttrData;
+				if( attrData == null ){ return null; }
+				return attrData.Description;
+			}
+		}
+
+		internal IdString( string fullName, int id )
+		{
+			mFullName = fullName;
 			mId = id;
 		}
 
 		public override readonly string ToString()
 		{
-			return mName;
+			return mFullName;
 		}
 
 		public override readonly int GetHashCode()
@@ -55,7 +81,7 @@ namespace Ptk.IdString
 
 			if( obj is string str )
 			{
-				return mName.Equals( str );
+				return mFullName.Equals( str );
 			}
 
 			return false;
@@ -77,13 +103,22 @@ namespace Ptk.IdString
 
 		void ISerializationCallbackReceiver.OnAfterDeserialize()
 		{
-			this = IdStringManager.GetByName( mName );
+			var idString = IdStringManager.GetByName( mFullName );
+			if( idString != IdString.None )
+			{
+				this = idString;
+			}
+			else
+			{
+				// missing..
+				mId = 0;
+			}
 		}
 
 		void ISerializationCallbackReceiver.OnBeforeSerialize()
 		{
 			// check only
-			IdStringManager.GetByName( mName );
+			IdStringManager.GetByName( mFullName );
 		}
 
 		static public IdString Get( string stringValue ) => IdStringManager.GetByName( stringValue );
