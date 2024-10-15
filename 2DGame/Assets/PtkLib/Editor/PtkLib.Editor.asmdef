@@ -1,0 +1,18 @@
+{
+    "name": "PtkLib.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9ae4a93300fb3b441b6ea46768e57bb9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
