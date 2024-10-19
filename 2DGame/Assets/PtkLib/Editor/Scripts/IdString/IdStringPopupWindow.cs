@@ -119,6 +119,7 @@ namespace Ptk.IdStrings.Editor
 			
 			int groupStartDepth = 0;
 			string lastFullName = null;
+			IdStringAttrData groupStartAttrData = null;
 			foreach( var attrData in IdStringManager.GetAllElements() )
 			{
 				if( attrData == null ){ continue; }
@@ -129,7 +130,7 @@ namespace Ptk.IdStrings.Editor
 
 				var fullName = attrData.IdString.FullName;
 				var depth = attrData.Hierarchy.Depth;
-#if false
+
 				// filter
 				if( !string.IsNullOrEmpty(filter)
 				 && !string.IsNullOrEmpty(fullName)
@@ -137,15 +138,13 @@ namespace Ptk.IdStrings.Editor
 				) { continue; }
 
 				// adjust depth 
-				if( string.IsNullOrEmpty(fullName)
-				 || string.IsNullOrEmpty(lastFullName)
-				 || !fullName.StartsWith( lastFullName ) )
-				{
+				if( groupStartAttrData == null
+				 || !groupStartAttrData.Hierarchy.IsDecendant( attrData )
+				){
+					groupStartAttrData = attrData;
 					groupStartDepth = depth;
 				}
 				depth -= groupStartDepth;
-				// TODO NG. 階層が戻るときもリセットされる
-#endif
 
 				items.Add(new IdStringTreeViewItem(attrData.IdString, attrData.ElementName, depth ));
 				lastFullName = fullName;

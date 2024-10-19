@@ -251,6 +251,32 @@ namespace Ptk
 			}
 		}
 
+		/// <summary>
+		/// 子孫に含まれるかを検索
+		/// </summary>
+		/// <param name="node"> 検査対象 </param>
+		/// <returns> node が子孫に含まれる場合 true </returns>
+		public bool IsDecendant( IHierarchyNode node )
+		{
+			// 無限回避
+			int ct = 0;
+			const int ctMax = int.MaxValue - 1;
+			var current = node;
+			while( current != null )
+			{
+				if( current == _RefObject ){ return true; }
+				current = current.Hierarchy.Parent;
+				++ct;
+				if( ctMax < ct )
+				{
+					Debug.LogError( "GetRootNode count limit over." );
+					break;
+				}
+			}
+			return false;
+		}
+		
+
 		public IHierarchyNode FindRootNode()
 		{
 			// 無限回避

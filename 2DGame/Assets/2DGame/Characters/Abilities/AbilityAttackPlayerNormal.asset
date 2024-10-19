@@ -30,5 +30,5 @@ MonoBehaviour:
   _FilterAttackGroupTag:
     mFullName: AbilityTag.Attack.Normal
   _FilterIgnoreYag:
-    mFullName: 
+    mFullName: Hiding
   _NextProperty: 0.94
