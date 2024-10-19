@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using System.Linq;
+using NUnit.Framework.Interfaces;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -218,6 +220,12 @@ namespace Ptk
 			return _Children.ElementAtOrDefault( index );
 		}
 
+		public TNode GetChild< TNode >( int index )
+			where TNode : class, IHierarchyNode
+		{
+			return GetChild( index ) as TNode;
+		}
+
 		/// <summary>
 		/// 子を取得
 		/// </summary>
@@ -303,6 +311,18 @@ namespace Ptk
 			UpdateDepthRecursively();
 			return true;
 		}
+
+		public IHierarchyNode GetParent()
+		{
+			return Parent;
+		}
+
+		public TNode GetParent< TNode >()
+			where TNode : class, IHierarchyNode
+		{
+			return Parent as TNode;
+		}
+		
 
 		public bool AddChild( IHierarchyNode child )
 		{
@@ -400,6 +420,28 @@ namespace Ptk
 			return mParent.Hierarchy.GetChildIndex( _RefObject );
 		}
 		
+		public void SortChildren< TNode >( Comparison< TNode > comparison )
+			where TNode : class, IHierarchyNode
+		{
+			if( comparison == null ){ return; }
+
+			_Children.Sort( ( a, b ) =>
+			{
+				var nodeA = a as TNode;
+				var nodeB = b as TNode;
+				return comparison.Invoke( nodeA, nodeB );
+			} );
+		}
+
+		public void SortChildren( Comparison< IHierarchyNode > comparison )
+		{
+			_Children.Sort( comparison );
+		}
+
+		public void SortChildren()
+		{
+			_Children.Sort();
+		}
 	}
 
 #if UNITY_EDITOR

@@ -117,12 +117,12 @@ namespace Ptk.IdStrings
 
 		void ISerializationCallbackReceiver.OnBeforeSerialize()
 		{
-			// check only
-			IdStringManager.GetByName( mFullName );
 		}
 
 		static public IdString Get( string stringValue ) => IdStringManager.GetByName( stringValue );
+		static public bool TryGetByName( string stringValue, out IdString result ) => IdStringManager.TryGetByName( stringValue, out result );
 		static public IdString Get< T >() => IdStringManager.GetByType< T >();
+		static public bool TryGetByType< T >( out IdString result ) => IdStringManager.TryGetByType< T >( out result );
 	}
 
 }

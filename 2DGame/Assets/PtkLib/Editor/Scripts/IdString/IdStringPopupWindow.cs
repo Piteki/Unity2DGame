@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using Ptk.Editors;
 
 
 namespace Ptk.IdStrings.Editor
@@ -60,9 +61,14 @@ namespace Ptk.IdStrings.Editor
 
 		private SearchField mSearchField = new();
 
+		private IdStringViewAttribute mIdStringViewAttribute;
+
 		public IdStringTreeView(TreeViewState state, SerializedProperty property, Action onSelectionChanged = null) 
 			: base(state)
 		{
+			var memberInfo = EditorUtils.GetPropertyOrFieldMemberInfo( property );
+			mIdStringViewAttribute = memberInfo?.GetCustomAttribute< IdStringViewAttribute >( true );
+
 			showAlternatingRowBackgrounds = true;
 
 			Reload();
@@ -71,7 +77,7 @@ namespace Ptk.IdStrings.Editor
 			mProperty = property;
 			mProperty.serializedObject.Update();
 
-			var idString = IdString.Get(mProperty.stringValue);
+			IdString.TryGetByName( mProperty.stringValue, out var idString );
 			if (idString != IdString.None)
 			{
 				var item = FindItem(idString.Id, rootItem);
@@ -103,11 +109,46 @@ namespace Ptk.IdStrings.Editor
 			TreeViewItem root = new(-2, -1, "<Root>");
 			List<TreeViewItem> items = new();
 
+			string filter = null;
+			bool ignoreHideInViewer = false;
+			if( mIdStringViewAttribute != null )
+			{
+				ignoreHideInViewer = mIdStringViewAttribute.IgnoreHideInViewer;
+				filter = mIdStringViewAttribute.Filter;
+			}
+			
+			int groupStartDepth = 0;
+			string lastFullName = null;
 			foreach( var attrData in IdStringManager.GetAllElements() )
 			{
 				if( attrData == null ){ continue; }
-				if( attrData.IsHideInViewer ) { continue; }
-				items.Add(new IdStringTreeViewItem(attrData.IdString, attrData.ElementName, attrData.Hierarchy.Depth ));
+
+				if( attrData.IsHideInViewer 
+				 && !ignoreHideInViewer
+				) { continue; }
+
+				var fullName = attrData.IdString.FullName;
+				var depth = attrData.Hierarchy.Depth;
+#if false
+				// filter
+				if( !string.IsNullOrEmpty(filter)
+				 && !string.IsNullOrEmpty(fullName)
+				 && !fullName.StartsWith(filter)
+				) { continue; }
+
+				// adjust depth 
+				if( string.IsNullOrEmpty(fullName)
+				 || string.IsNullOrEmpty(lastFullName)
+				 || !fullName.StartsWith( lastFullName ) )
+				{
+					groupStartDepth = depth;
+				}
+				depth -= groupStartDepth;
+				// TODO NG. 階層が戻るときもリセットされる
+#endif
+
+				items.Add(new IdStringTreeViewItem(attrData.IdString, attrData.ElementName, depth ));
+				lastFullName = fullName;
 			}
 
 			SetupParentsAndChildrenFromDepths( root, items );

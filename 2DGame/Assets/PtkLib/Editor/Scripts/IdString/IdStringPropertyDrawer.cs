@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using System.Reflection;
 
 
 namespace Ptk.IdStrings.Editor
@@ -21,7 +22,7 @@ namespace Ptk.IdStrings.Editor
 
 			var fullNameProperty = property.FindPropertyRelative("mFullName");
 			var fullNameString = fullNameProperty.stringValue;
-			var idString = IdString.Get( fullNameString );
+			IdString.TryGetByName( fullNameString, out var idString );
 
 			if( idString == IdString.None )
 			{
@@ -33,6 +34,7 @@ namespace Ptk.IdStrings.Editor
 				}
 				else
 				{
+					GUI.color = Color.yellow;
 					sTmp.text = $"Missing ({nameof(IdString)}:{fullNameString})";
 					sTmp.tooltip = null;
 				}
@@ -48,9 +50,9 @@ namespace Ptk.IdStrings.Editor
 				if( attrData != null )
 				{
 					strText = attrData.ElementName;
-					if( !string.IsNullOrEmpty( attrData.ParentFullPath ) )
+					if( !string.IsNullOrEmpty( attrData.ParentPath ) )
 					{
-						strText += $" ({attrData.ParentFullPath})";
+						strText += $" ({attrData.ParentPath})";
 					}
 					strTooltip = attrData.Attribute?.Description; 
 				}

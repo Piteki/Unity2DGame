@@ -12,7 +12,25 @@ namespace Ptk
 	{
 		[SerializeField] private float _BaseDamage = 1;
 
+		[SerializeField] IdString _PlaneTag;
+
+		[IdStringView]
 		[SerializeField] IdString _OwnTag;
+
+		[IdStringView( IgnoreHideInViewer = true )]
+		[SerializeField] IdString _IgnoreTag;
+
+		[IdStringView( Filter = "AbilityTag" )]
+		[SerializeField] IdString _FilterTag;
+		[IdStringView( Filter = "AbilityTag." )]
+		[SerializeField] IdString _FilterGroupTag;
+		[IdStringView( Filter = "AbilityTag.Attack" )]
+		[SerializeField] IdString _FilterAttackTag;
+		[IdStringView( Filter = "AbilityTag.Attack." )]
+		[SerializeField] IdString _FilterAttackGroupTag;
+
+		[IdStringView( Filter = "Hiding", IgnoreHideInViewer = true )]
+		[SerializeField] IdString _FilterIgnoreYag;
 
 		[SerializeField] private float _NextProperty = 1;
 

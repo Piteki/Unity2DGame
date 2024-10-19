@@ -15,6 +15,20 @@ MonoBehaviour:
   _AutoExecute: 0
   _RestartWhenExecuting: 0
   _BaseDamage: 1
+  _PlaneTag:
+    mFullName: AbilityTag.Attack
   _OwnTag:
+    mFullName: assemblyType.asmParent
+  _IgnoreTag:
+    mFullName: 
+  _FilterTag:
+    mFullName: 
+  _FilterGroupTag:
+    mFullName: 
+  _FilterAttackTag:
+    mFullName: 
+  _FilterAttackGroupTag:
     mFullName: AbilityTag.Attack.Normal
-  _NextProperty: 1
+  _FilterIgnoreYag:
+    mFullName: 
+  _NextProperty: 0.94
