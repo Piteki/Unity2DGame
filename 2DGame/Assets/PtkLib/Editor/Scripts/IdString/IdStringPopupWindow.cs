@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Ptk.Editors;
+using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 
 
 namespace Ptk.IdStrings.Editor
