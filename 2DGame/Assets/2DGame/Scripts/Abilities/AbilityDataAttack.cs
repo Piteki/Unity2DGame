@@ -3,6 +3,7 @@ using UnityEngine;
 using Unity.Logging;
 using Ptk.AbilitySystems;
 using Ptk.IdStrings;
+using Ptk.AppTag;
 
 namespace Ptk
 {
@@ -19,6 +20,11 @@ namespace Ptk
 
 		[IdStringView( IgnoreHideInViewer = true )]
 		[SerializeField] IdString _IgnoreTag;
+
+		[IdStringView(typeof(AbilityTag.Attack))]
+		[SerializeField] IdString _FilterTypeTag;
+		[IdStringView(  FilterType = typeof(AbilityTag.Attack), IncludeFilterTypeItself = true )]
+		[SerializeField] IdString _FilterTypeExcludeTag;
 
 		[IdStringView( Filter = "AbilityTag" )]
 		[SerializeField] IdString _FilterTag;

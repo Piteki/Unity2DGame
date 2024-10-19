@@ -64,7 +64,7 @@ namespace Ptk.IdStrings.Editor
 			{
 				IdStringTreeView tagTreeView = new(new UnityEditor.IMGUI.Controls.TreeViewState(), fullNameProperty, static () =>
 				{
-				   EditorWindow.GetWindow<PopupWindow>().Close();
+					EditorWindow.GetWindow<PopupWindow>().Close();
 				});
 				IdStringPopupWindowContent.ShowWindow( position, 320.0f, tagTreeView );
 

@@ -122,7 +122,9 @@ namespace Ptk.IdStrings
 		static public IdString Get( string stringValue ) => IdStringManager.GetByName( stringValue );
 		static public bool TryGetByName( string stringValue, out IdString result ) => IdStringManager.TryGetByName( stringValue, out result );
 		static public IdString Get< T >() => IdStringManager.GetByType< T >();
+		static public IdString Get( Type type ) => IdStringManager.GetByType( type );
 		static public bool TryGetByType< T >( out IdString result ) => IdStringManager.TryGetByType< T >( out result );
+		static public bool TryGetByType( Type type, out IdString result ) => IdStringManager.TryGetByType( type, out result );
 	}
 
 }

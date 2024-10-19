@@ -90,9 +90,48 @@ namespace Ptk.IdStrings
 	)]
 	public class IdStringViewAttribute : Attribute
 	{
+		/// <summary>
+		/// Filter
+		/// </summary>
+		/// <remarks>
+		/// StartWith で一致する要素のみを表示対象とする。
+		/// FilterType とは併用不可。FilterType 指定よりも優先される。
+		/// </remarks>
 		public string Filter { get; set; }
 
+		/// <summary>
+		/// Filter Type
+		/// </summary>
+		/// <remarks>
+		/// IdStringDefineMember で定義された Type の子孫を表示対象とする
+		/// Filter とは併用不可。Filter 指定が優先される。
+		/// </remarks>
+		public Type FilterType { get; set; }
+
+		/// <summary>
+		/// Filter Type の Type 自身を含めるか
+		/// </summary>
+		/// <remarks>
+		/// FilterType 定義時のみ有効。
+		/// FilterType での Filter 結果に子孫だけでなく FilterType 自体も対象とする場合に true を設定する。
+		/// </remarks>
+		public bool IncludeFilterTypeItself { get; set; }
+
+		/// <summary>
+		/// HideInViewer を無視するか
+		/// </summary>
 		public bool IgnoreHideInViewer { get; set; }
+
+		public IdStringViewAttribute( Type filterType = null, bool includeFilterTypeItself = false )
+		{
+			FilterType = filterType;
+			IncludeFilterTypeItself = includeFilterTypeItself;
+		}
+
+		public IdStringViewAttribute( string filter )
+		{
+			Filter = filter;
+		}
 
 	}
 

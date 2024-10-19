@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using Ptk.Editors;
 
 
@@ -115,6 +113,20 @@ namespace Ptk.IdStrings.Editor
 			{
 				ignoreHideInViewer = mIdStringViewAttribute.IgnoreHideInViewer;
 				filter = mIdStringViewAttribute.Filter;
+				if( string.IsNullOrEmpty( filter ) 
+				 && mIdStringViewAttribute.FilterType != null
+				){
+					if( !IdString.TryGetByType( mIdStringViewAttribute.FilterType, out var filterTypeIdString ) )
+					{
+						Debug.LogWarning( $"IdStringView FilterType IdString not registered. Type: {mIdStringViewAttribute.FilterType.FullName}" );
+						return root;
+					}
+					filter = filterTypeIdString.FullName;
+					if( !mIdStringViewAttribute.IncludeFilterTypeItself )
+					{
+						filter += ".";
+					}
+				}
 			}
 			
 			int groupStartDepth = 0;
@@ -182,12 +194,6 @@ namespace Ptk.IdStrings.Editor
 			{
 				CollapseAll();
 			}
-
-			//if( GUILayout.Button("Reset", EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)) )
-			//{
-			//	mProperty.stringValue = null;
-			//	mProperty.serializedObject.ApplyModifiedProperties();
-			//}
 
 			searchString = mSearchField.OnToolbarGUI(searchString);
 

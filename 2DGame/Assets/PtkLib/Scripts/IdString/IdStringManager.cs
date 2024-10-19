@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Codice.Client.BaseCommands;
 using UnityEngine;
 
 namespace Ptk.IdStrings
@@ -188,8 +187,6 @@ namespace Ptk.IdStrings
 				};
 				sIdStringAttrList.Add( attrData );
 			}
-
-#if true
 
 			// name と Attribute を一時領域に登録
 			IdStringAttrData AddNameAndAttribute( string name, IdStringDefineAttribute attribute = null, int overwriteDefineOrder = 0 )
@@ -461,12 +458,6 @@ namespace Ptk.IdStrings
 				AddAttrDataParentReclusively( parentAttrData );
 			}
 
-		//static private List< IdStringAttrData > sIdStringAttrList = new();
-		//static private Dictionary< string, IdStringAttrData > sStringAttrDataDic = new();
-		//static private Dictionary< Type, IdStringAttrData > sTypeAttrDataDic = new();
-		//static private List< IdStringAttrData > sAttrDataRoots = new();
-
-
 			// Order順 DefineOrder 順ソート
 			Comparison< IdStringAttrData > comparison = ( a, b ) =>
 			{
@@ -552,207 +543,6 @@ namespace Ptk.IdStrings
 				}
 			}
 
-
-#else
-
-			var memberBindFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-			memberBindFlags |= BindingFlags.SetField;
-			memberBindFlags |= BindingFlags.SetProperty;
-			memberBindFlags |= BindingFlags.DeclaredOnly;
-
-			// IdString class を検索
-			foreach( var assembly in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				foreach( var type in assembly.GetTypes() )
-				{
-					AddAttrData( type, true );
-					IdStringAttrData AddAttrData( Type type, bool isFirst )
-					{
-						if( type == null ){ return null; }
-					
-						if( sTypeAttrDataDic.TryGetValue( type, out var attrData ) )
-						{ return attrData; }
-
-						var typeAttr = type.GetCustomAttribute<IdStringAttribute>();
-						// 初回の場合は 属性ない時点で終了
-						if( typeAttr == null
-						 && isFirst
-						){
-							return null;
-						}
-
-						// parent を add
-						var parent = AddAttrData( type.ReflectedType, false );
-						// 属性なしは return
-						if( typeAttr == null ){ return parent; }
-
-						if( type.IsGenericType )
-						{
-							IdStringManager.LogError( $"IdStringAttribute type is generic type. {type.FullName}, Assembly: {assembly.FullName}" );
-							return parent; 
-						}
-
-						string parentPath = null;
-						if( parent != null )
-						{
-							AppendPath( ref parentPath, parent.ParentPath );
-							AppendPath( ref parentPath, parent.ElementName );
-						}
-
-						attrData = new IdStringAttrData()
-						{
-							Attribute = typeAttr,
-
-							MemberInfo = type.GetTypeInfo(),
-							MemberName = type.Name,
-							ParentPath = parentPath,
-							IsHideInViewer = false,
-						};
-
-						if( parent != null )
-						{
-							attrData.Hierarchy.SetParent( parent );
-						}
-						else
-						{
-							sAttrDataRoots.Add( attrData );
-						}
-
-						sTypeAttrDataDic.Add( type, attrData );
-						return attrData;
-					}
-				}
-			}
-
-			var idStringType = typeof( IdString );
-
-			foreach( var pair in sTypeAttrDataDic )
-			{
-				var parentType = pair.Key;
-				var parentTypeAttrData = pair.Value;
-
-				
-
-				// DefinitionType 自体を登録
-				string parentParentFullPath = string.Empty;
-				string parentNamespace = string.Empty;
-				var parentNamespaceType = parentTypeAttrData.GetNamespaceType();
-				if( parentNamespaceType != EIdStringNamespaceType.None 
-				 && !string.IsNullOrEmpty( parentType.Namespace )
-				){
-					parentNamespace = parentType.Namespace;
-					parentParentFullPath = parentNamespace;
-				}
-				string parentPath = string.Empty;
-				var parentParentNameType = parentTypeAttrData.GetParentNameType();
-				if(	parentParentNameType != EIdStringParentNameType.None
-				 && !string.IsNullOrEmpty( parentTypeAttrData.ParentPath ) 
-				){
-					parentPath = parentTypeAttrData.ParentPath;
-					AppendPath( ref parentParentFullPath, parentPath );
-				}
-				string parentString = parentParentFullPath;
-				AppendPath( ref parentString, parentTypeAttrData.ElementName );
-
-				var parentHideInViewer = parentTypeAttrData.GetIsHideInViewer();
-
-				var parentTypeIdString = new IdString( parentString, sIdStringAttrList.Count );
-				parentTypeAttrData.IdString = parentTypeIdString;
-				parentTypeAttrData.ParentFullPath = parentParentFullPath;
-				parentTypeAttrData.IsHideInViewer = parentHideInViewer;
-
-				sIdStringAttrList.Add( parentTypeAttrData );
-				sStringAttrDataDic.Add( parentString, parentTypeAttrData );
-
-				AppendPath( ref parentPath, parentTypeAttrData.ElementName );
-
-				foreach( var memberInfo in parentType.GetMembers( memberBindFlags ) )
-				{
-
-					Type memberType = null;
-					{
-						if( memberInfo is PropertyInfo propertyInfo )
-						{
-							memberType = propertyInfo.PropertyType;
-						}
-						else if( memberInfo is FieldInfo fieldInfo )
-						{
-							memberType = fieldInfo.FieldType;
-						}
-					}
-					if( memberType != idStringType ){ continue; }
-
-					var attr = memberInfo.GetCustomAttribute<IdStringAttribute>();
-					if( attr == null ){ continue; }
-
-					var parentFullPath = string.Empty;
-					var namespaceType = attr.NamespaceType != EIdStringNamespaceType.UseParentSetting
-									  ? attr.NamespaceType
-									  : parentNamespaceType;
-					if( namespaceType != EIdStringNamespaceType.None 
-					 && !string.IsNullOrEmpty( parentNamespace )
-					){
-						parentFullPath = parentNamespace;
-					}
-					var parentNameType = attr.ParentNameType != EIdStringParentNameType.UseParentSetting
-										? attr.ParentNameType
-										: parentParentNameType;
-					if(	parentNameType != EIdStringParentNameType.None
-					 && !string.IsNullOrEmpty( parentPath ) 
-					){
-						AppendPath( ref parentFullPath, parentPath );
-					}
-
-					var elementName = !string.IsNullOrEmpty( attr.Name ) ? attr.Name : memberInfo.Name;
-
-					string name = parentFullPath;
-					AppendPath( ref name, elementName );
-
-					bool exists = sStringAttrDataDic.TryGetValue( name, out var attrData );
-					if( !exists )
-					{
-						var idString = new IdString( name, sIdStringAttrList.Count );
-
-						attrData = new IdStringAttrData()
-						{
-							Attribute = attr,
-
-							MemberName = memberInfo.Name,
-							ParentPath = parentString,
-
-							IsHideInViewer = parentHideInViewer || attr.HideInViewer,
-
-							ParentFullPath = parentFullPath,
-
-							IdString = idString,
-
-						};
-
-						attrData.Hierarchy.SetParent(parentTypeAttrData);
-
-						sIdStringAttrList.Add( attrData );
-						sStringAttrDataDic.Add( name, attrData );
-					}
-
-					try
-					{
-						if( memberInfo is PropertyInfo propertyInfo )
-						{
-							propertyInfo.SetValue( null, attrData.IdString );
-						}
-						else if ( memberInfo is FieldInfo fieldInfo )
-						{
-							fieldInfo.SetValue( null, attrData.IdString );
-						}
-					}
-					catch( Exception exception )
-					{
-						IdStringManager.LogError( $"IdString SetValue Failed. name: {name}, Assembly: {memberInfo.GetType().Assembly.FullName}\nException: {exception.GetType().Name} Message: {exception.Message}" );
-					}
-
-				}
-			}
-#endif
 			sw.Stop();
 			UnityEngine.Debug.Log( $"IdString Initialized. {sw.Elapsed.TotalSeconds} sec." );
 		}
@@ -865,7 +655,7 @@ namespace Ptk.IdStrings
 		{
 			return IdString.FullName != null 
 				? IdString.FullName
-				: IdString == IdString.None ? IdString.ElementName : "(FullName is null)";
+				: IdString == IdString.None ? IdString.ElementName : "(Error : FullName is null )";
 		}
 
 	}
