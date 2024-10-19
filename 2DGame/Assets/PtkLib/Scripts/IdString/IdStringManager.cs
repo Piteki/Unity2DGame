@@ -623,7 +623,7 @@ namespace Ptk.IdStrings
 			}
 			UnityEngine.Debug.Log( " --- IdString Debug Print AllElements end -----------------------" );
 		}
-
+		
 	}
 
 	/// <summary>
