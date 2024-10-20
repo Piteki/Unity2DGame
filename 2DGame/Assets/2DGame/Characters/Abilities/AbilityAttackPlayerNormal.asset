@@ -22,17 +22,17 @@ MonoBehaviour:
   _IgnoreTag:
     mFullName: AbilityTag.Attack
   _FilterTypeTag:
-    mFullName: 
+    mFullName: newValue
   _FilterTypeExcludeTag:
     mFullName: Hiding
   _FilterTag:
     mFullName: AbilityTag.Attack.DashAttack
   _FilterGroupTag:
-    mFullName: 
+    mFullName: 0.94
   _FilterAttackTag:
-    mFullName: 
+    mFullName: AbilityTag.Attack
   _FilterAttackGroupTag:
-    mFullName: AbilityTag.Attack.Normal
+    mFullName: https://qiita.com/SAM_tak/items/abd7a0d6aa2d93031aaa
   _FilterIgnoreYag:
-    mFullName: 
+    mFullName: Hiding
   _NextProperty: 0.94

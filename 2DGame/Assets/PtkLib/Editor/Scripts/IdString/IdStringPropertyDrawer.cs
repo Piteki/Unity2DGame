@@ -48,8 +48,6 @@ namespace Ptk.IdStrings.Editor
 				var rawString = EditorGUIUtility.systemCopyBuffer;
 				rawString = IdStringManager.GetSanitizedString( rawString );
 				var newValue = IdStringManager.GetByNameOrCreateMissingReference( rawString );
-				var value = (IdString)fieldInfo.GetValue( targetObject );
-				if( value.FullName == newValue.FullName ){ return; }
 
 				Undo.RecordObject( targetObject, $"Paste {property.displayName}" );
 				

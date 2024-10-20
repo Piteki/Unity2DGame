@@ -22,10 +22,35 @@ namespace Ptk.IdStrings
 		[SerializeField] private string mFullName;
 		private int mId;
 
+		/// <summary>
+		/// Full Name 
+		/// </summary>
+		/// <remarks>
+		/// Serialize 対象の文字列。
+		/// </remarks>
 		public string FullName => mFullName;
+
+		/// <summary>
+		/// Id
+		/// </summary>
+		/// <remarks>
+		/// IdStringManager 内部の登録 Id。
+		/// 等価比較などに使用される。
+		/// 値は Domain Reload のたびに変更されるためこれを保存して使用しないこと。
+		/// </remarks>
 		internal int Id => mId;
+
+		/// <summary>
+		/// attribute data
+		/// </summary>
 		internal IdStringAttrData AttrData => IdStringManager.GetAttrData( this );
 
+		/// <summary>
+		/// 要素名
+		/// </summary>
+		/// <remarks>
+		/// FullName から ParentPath を除いた文字列。
+		/// </remarks>
 		public string ElementName
 		{
 			get{
@@ -34,6 +59,10 @@ namespace Ptk.IdStrings
 				return attrData.ElementName;
 			}
 		}
+
+		/// <summary>
+		/// 階層レベル
+		/// </summary>
 		public int HierarchyLevel
 		{
 			get{
@@ -42,6 +71,10 @@ namespace Ptk.IdStrings
 				return attrData.Hierarchy.Depth;
 			}
 		}
+
+		/// <summary>
+		/// 説明
+		/// </summary>
 		public string Description
 		{
 			get{
@@ -50,6 +83,64 @@ namespace Ptk.IdStrings
 				return attrData.Attribute?.Description;
 			}
 		}
+
+		/// <summary>
+		/// 文字列から IdString を取得
+		/// </summary>
+		/// <param name="stringValue"> FullName 文字列 </param>
+		/// <returns> 登録済 IdString。ない場合は IdString.None を返し Warning Log を出力する。 </returns>
+		static public IdString Get( string stringValue ) => IdStringManager.GetByName( stringValue );
+
+		/// <summary>
+		/// 文字列から IdString を取得
+		/// </summary>
+		/// <param name="stringValue"> FullName 文字列 </param>
+		/// <param name="result"> 登録済 IdString。ない場合は IdString.None。 </param>
+		/// <returns> 登録済 IdString が見つかった場合 true。 </returns>
+		static public bool TryGetByName( string stringValue, out IdString result ) => IdStringManager.TryGetByName( stringValue, out result );
+		
+		/// <summary>
+		/// Type から IdString を取得
+		/// </summary>
+		/// <remarks>
+		/// IdStringDefineMember Attribute を付与した Type で定義した IdString を取得する。
+		/// </remarks>
+		/// <typeparam name="T"> IdStringDefineMember を付与したType </typeparam>
+		/// <returns> 登録済 IdString。ない場合は IdString.None を返し Warning Log を出力する。 </returns>
+		static public IdString Get< T >() => IdStringManager.GetByType< T >();
+		
+		/// <summary>
+		/// Type から IdString を取得
+		/// </summary>
+		/// <remarks>
+		/// IdStringDefineMember Attribute を付与した Type で定義した IdString を取得する。
+		/// </remarks>
+		/// <param name="type"> IdStringDefineMember を付与したType </param>
+		/// <returns> 登録済 IdString。ない場合は IdString.None を返し Warning Log を出力する。 </returns>
+		static public IdString Get( Type type ) => IdStringManager.GetByType( type );
+
+		/// <summary>
+		/// Type から IdString を取得
+		/// </summary>
+		/// <remarks>
+		/// IdStringDefineMember Attribute を付与した Type で定義した IdString を取得する。
+		/// </remarks>
+		/// <typeparam name="T"> IdStringDefineMember を付与したType </typeparam>
+		/// <param name="result"> 登録済 IdString。ない場合は IdString.None。 </param>
+		/// <returns> 登録済 IdString が見つかった場合 true。 </returns>
+		static public bool TryGetByType< T >( out IdString result ) => IdStringManager.TryGetByType< T >( out result );
+
+		/// <summary>
+		/// Type から IdString を取得
+		/// </summary>
+		/// <remarks>
+		/// IdStringDefineMember Attribute を付与した Type で定義した IdString を取得する。
+		/// </remarks>
+		/// <param name="type"> IdStringDefineMember を付与したType </param>
+		/// <param name="result"> 登録済 IdString。ない場合は IdString.None。 </param>
+		/// <returns> 登録済 IdString が見つかった場合 true。 </returns>
+		static public bool TryGetByType( Type type, out IdString result ) => IdStringManager.TryGetByType( type, out result );
+
 
 		internal IdString( string fullName, int id )
 		{
@@ -119,12 +210,6 @@ namespace Ptk.IdStrings
 		{
 		}
 
-		static public IdString Get( string stringValue ) => IdStringManager.GetByName( stringValue );
-		static public bool TryGetByName( string stringValue, out IdString result ) => IdStringManager.TryGetByName( stringValue, out result );
-		static public IdString Get< T >() => IdStringManager.GetByType< T >();
-		static public IdString Get( Type type ) => IdStringManager.GetByType( type );
-		static public bool TryGetByType< T >( out IdString result ) => IdStringManager.TryGetByType< T >( out result );
-		static public bool TryGetByType( Type type, out IdString result ) => IdStringManager.TryGetByType( type, out result );
 	}
 
 }
