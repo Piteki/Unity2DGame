@@ -611,7 +611,12 @@ namespace Ptk.IdStrings
 		/// <returns></returns>
 		internal static string GetSanitizedString( in string path )
 		{
-			var str = path.Substring( 0, NameMaxLength );
+			if( string.IsNullOrEmpty( path ) ) { return path; }
+			var str = path;
+			if( NameMaxLength < str.Length )
+			{
+				str = path.Substring( 0, NameMaxLength );
+			}
 			str = str.Trim();
 			str = str.Replace( "\r", string.Empty ).Replace( "\n", string.Empty );
 			return str;

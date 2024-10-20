@@ -18,21 +18,22 @@ MonoBehaviour:
   _PlaneTag:
     mFullName: AbilityTag.Attack
   _OwnTag:
-    mFullName: "\t\t\t// \u6587\u5B57\u5217\u30B3\u30D4\u30FC\n"
+    mFullName: IsHideInViewer
   _IgnoreTag:
-    mFullName: AbilityTag
+    mFullName: AbilityTag.Attack
   _FilterTypeTag:
-    mFullName: AbilityTag.Attack.Normal
+    mFullName: sTmp
   _FilterTypeExcludeTag:
-    mFullName: AbilityTag.Attack
+    mFullName: Hiding
   _FilterTag:
-    mFullName: AbilityTag.Attack
-  _FilterGroupTag:
     mFullName: AbilityTag.Attack.DashAttack
+  _FilterGroupTag:
+    mFullName: Undo.RecordObject(targetObject, $"{typeof( IdString ).Name} Paste
+      Raw string");
   _FilterAttackTag:
-    mFullName: 
+    mFullName: targetObject
   _FilterAttackGroupTag:
     mFullName: AbilityTag.Attack.Normal
   _FilterIgnoreYag:
-    mFullName: Hiding
+    mFullName: newValue
   _NextProperty: 0.94

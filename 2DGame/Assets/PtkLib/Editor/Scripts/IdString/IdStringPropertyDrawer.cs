@@ -45,11 +45,17 @@ namespace Ptk.IdStrings.Editor
 			// 文字列ペースト
 			menu.AddItem( new GUIContent( "Paste Raw string" ), false, () => 
 			{ 
-				var value = EditorGUIUtility.systemCopyBuffer;
-				value = IdStringManager.GetSanitizedString( value );
-				var find = IdStringManager.GetByNameOrCreateMissingReference( value );
+				var rawString = EditorGUIUtility.systemCopyBuffer;
+				rawString = IdStringManager.GetSanitizedString( rawString );
+				var newValue = IdStringManager.GetByNameOrCreateMissingReference( rawString );
+				var value = (IdString)fieldInfo.GetValue( targetObject );
+				if( value == newValue ){ return; }
 
-				fieldInfo.SetValue( targetObject, find );
+				Undo.RecordObject( targetObject, $"Paste {property.displayName}" );
+				
+				fieldInfo.SetValue( targetObject, newValue );
+
+				EditorUtility.SetDirty( targetObject );
 			});
 		}
 
