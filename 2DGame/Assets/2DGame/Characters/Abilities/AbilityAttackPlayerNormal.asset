@@ -18,9 +18,9 @@ MonoBehaviour:
   _PlaneTag:
     mFullName: AbilityTag.Attack
   _OwnTag:
-    mFullName: assemblyType.asmParent
+    mFullName: "\t\t\t// \u6587\u5B57\u5217\u30B3\u30D4\u30FC\n"
   _IgnoreTag:
-    mFullName: 
+    mFullName: AbilityTag
   _FilterTypeTag:
     mFullName: AbilityTag.Attack.Normal
   _FilterTypeExcludeTag:

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
+using Ptk.Editors;
 
 
 namespace Ptk.IdStrings.Editor
@@ -10,6 +11,47 @@ namespace Ptk.IdStrings.Editor
 	public class IdStringPropertyDrawer : PropertyDrawer
 	{
 		private static readonly GUIContent sTmp = new();
+
+		/// <summary>
+		/// 起動時の初期化
+		/// </summary>
+		[InitializeOnLoadMethod]
+		private static void InitializeMenu()
+		{
+			// 右クリックメニュー追加
+			EditorApplication.contextualPropertyMenu -= OnContextualPropertyMenu;
+			EditorApplication.contextualPropertyMenu += OnContextualPropertyMenu;
+		}
+
+		/// <summary>
+		/// 右クリックメニュー
+		/// </summary>
+		/// <param name="menu"></param>
+		/// <param name="property"></param>
+		private static void OnContextualPropertyMenu( GenericMenu menu, SerializedProperty property )
+		{
+			var fieldInfo = property.GetPropertyOrFieldMemberInfo() as FieldInfo;
+			var type = fieldInfo?.FieldType;
+			if( type != typeof( IdString ) ) { return; }
+			var targetObject = property.serializedObject.targetObject;
+
+			// 文字列コピー
+			menu.AddItem( new GUIContent( "Copy Raw string" ), false, () => 
+			{ 
+				var value = (IdString)fieldInfo.GetValue( targetObject );
+				EditorGUIUtility.systemCopyBuffer = value.FullName;
+			});
+
+			// 文字列ペースト
+			menu.AddItem( new GUIContent( "Paste Raw string" ), false, () => 
+			{ 
+				var value = EditorGUIUtility.systemCopyBuffer;
+				value = IdStringManager.GetSanitizedString( value );
+				var find = IdStringManager.GetByNameOrCreateMissingReference( value );
+
+				fieldInfo.SetValue( targetObject, find );
+			});
+		}
 
 		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 		{
@@ -41,8 +83,6 @@ namespace Ptk.IdStrings.Editor
 			}
 			else
 			{
-				//sTmp.text = idString.FullName;
-				//sTmp.tooltip = idString.Description; 
 				string strText = null;
 				string strTooltip = null;
 

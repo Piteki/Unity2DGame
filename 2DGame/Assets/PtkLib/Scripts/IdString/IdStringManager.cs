@@ -15,6 +15,7 @@ namespace Ptk.IdStrings
 	/// </remarks>
 	static public class IdStringManager
 	{
+		public const int NameMaxLength = 512;
 		public static readonly char[] PathSeparators = new[]{ '.', };
 		public static readonly string PathSeparator = ".";
 
@@ -41,6 +42,27 @@ namespace Ptk.IdStrings
 			}
 			return idString;
 		}
+
+		/// <summary>
+		/// name で IdString を取得 or 生成。
+		/// </summary>
+		/// <remarks>
+		/// 存在しない場合は Missing Reference を生成。
+		/// </remarks>
+		/// <param name="name"> name ( full path ) </param>
+		/// <returns> IdString. 見つからない場合は IdString.None </returns>
+		static internal IdString GetByNameOrCreateMissingReference( string name )
+		{
+			if( !TryGetByName( name, out var idString ) )
+			{
+				if( !string.IsNullOrEmpty(name) )
+				{
+					idString = new IdString( name, 0 );
+				}
+			}
+			return idString;
+		}
+
 
 		/// <summary>
 		/// name で IdString を取得
@@ -582,14 +604,40 @@ namespace Ptk.IdStrings
 			return ret;
 		}
 
-		private static string GetValidatedPath( in string path )
+		/// <summary>
+		/// 余分な文字を除去
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		internal static string GetSanitizedString( in string path )
 		{
-			var splitPaths = SplitPath(path);
+			var str = path.Substring( 0, NameMaxLength );
+			str = str.Trim();
+			str = str.Replace( "\r", string.Empty ).Replace( "\n", string.Empty );
+			return str;
+		}
+
+		/// <summary>
+		/// 検証済パスを返す
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		internal static string GetValidatedPath( in string path )
+		{
+			var str = GetSanitizedString( path );
+			var splitPaths = SplitPath(str);
 			return string.Join( PathSeparator, splitPaths );
 		}
 
-		
-		private static bool GetParentPath( in string path, out string parentPath, out string elementName, bool isValidated = false )
+		/// <summary>
+		/// 1 階層上のパスを返す
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="parentPath"></param>
+		/// <param name="elementName"></param>
+		/// <param name="isValidated"></param>
+		/// <returns></returns>
+		internal static bool GetParentPath( in string path, out string parentPath, out string elementName, bool isValidated = false )
 		{
 			elementName = isValidated ? path : GetValidatedPath( path );
 			parentPath = null;
