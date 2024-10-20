@@ -49,7 +49,7 @@ namespace Ptk.IdStrings.Editor
 				rawString = IdStringManager.GetSanitizedString( rawString );
 				var newValue = IdStringManager.GetByNameOrCreateMissingReference( rawString );
 				var value = (IdString)fieldInfo.GetValue( targetObject );
-				if( value == newValue ){ return; }
+				if( value.FullName == newValue.FullName ){ return; }
 
 				Undo.RecordObject( targetObject, $"Paste {property.displayName}" );
 				
