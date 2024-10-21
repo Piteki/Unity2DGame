@@ -521,11 +521,22 @@ namespace Ptk.IdStrings
 				bool nonHierarchical = attribute != null ? attribute.NonHierarchical : false;
 
 				attrData.IsHideInViewer = attribute != null ? attribute.HideInViewer : false;
+
+				List<IdString> parentList;
+
 				if( parent != null 
 				 && !nonHierarchical
 				){
 					attrData.IsHideInViewer |= parent.IsHideInViewer;
+
+					parentList = new List<IdString>( parent.ParentList );
+					parentList.Add( parent.IdString );
 				}
+				else
+				{
+					parentList = new List<IdString>( 0 );
+				}
+				attrData.ParentList = parentList;
 
 				var fullName = attrData.IdString.FullName;
 				attrData.IdString = new IdString( fullName, sIdStringAttrList.Count );
@@ -703,6 +714,8 @@ namespace Ptk.IdStrings
 		
 		/// <summary> IdString </summary>
 		public IdString IdString { get; set; }
+
+		public List<IdString> ParentList { get; internal set; }
 
 		public override string ToString()
 		{
