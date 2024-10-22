@@ -136,6 +136,35 @@ namespace Ptk.IdStrings
 			return true;
 		}
 
+		/// <summary>
+		/// 指定要素の子かを判定
+		/// </summary>
+		/// <returns> self の親が parent の場合 true </returns>
+		static public bool IsChildOf( in IdString self, in IdString parent )
+		{
+			if( !parent.IsValid ){ return false; }
+			var attrData = self.AttrData;
+			if( attrData == null ){ return false; }
+			//var firstElem = attrData.ParentList.FirstOrDefault();
+			var parentList = attrData.ParentList;
+			var firstElem = 0 < parentList.Count ? parentList[ 0 ] : IdString.None;
+			return attrData.ParentList.FirstOrDefault() == firstElem;
+		}
+
+		/// <summary>
+		/// 指定要素の子孫かを判定
+		/// </summary>
+		/// <returns> self の祖先に ancestor が含まれる場合 true </returns>
+		static public bool IsDescendantOf( in IdString self, in IdString ancestor )
+		{
+			if( !ancestor.IsValid ){ return false; }
+			var attrData = self.AttrData;
+			if( attrData == null ){ return false; }
+			return attrData.ParentList.Contains( ancestor );
+		}
+
+
+
 		static internal IdStringAttrData GetAttrData( in IdString idString )
 		{
 			int idx = Mathf.Max( 0, idString.Id );
@@ -530,7 +559,7 @@ namespace Ptk.IdStrings
 					attrData.IsHideInViewer |= parent.IsHideInViewer;
 
 					parentList = new List<IdString>( parent.ParentList );
-					parentList.Add( parent.IdString );
+					parentList.Insert( 0, parent.IdString );
 				}
 				else
 				{

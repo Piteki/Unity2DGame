@@ -22,6 +22,8 @@ namespace Ptk.IdStrings
 
 		private Dictionary<IdString, int> mCounter;
 
+		private Dictionary<IdString, int> mImplicitCounter;
+
 		//private List< IdString > mTmp = new( ContainerDefaultCapacity );
 
 		public bool IsDirty{ get; private set; }
@@ -171,7 +173,7 @@ namespace Ptk.IdStrings
 
 
 		/// <summary>
-		/// 指定位置要素を削除
+		/// 指定位置の要素を削除
 		/// </summary>
 		/// <param name="idString"></param>
 		/// <returns></returns>
@@ -183,7 +185,7 @@ namespace Ptk.IdStrings
 		}
 
 		/// <summary>
-		/// 指定要素を全件削除
+		/// 指定要素を全て削除
 		/// </summary>
 		/// <param name="idString"></param>
 		/// <returns></returns>
@@ -192,11 +194,125 @@ namespace Ptk.IdStrings
 			return 0 < RemoveLast( idString, int.MaxValue );
 		}
 
+		/// <summary>
+		/// 指定の値を保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値を保持していれば true を返す。
+		/// 直接保持している値の他、保持している値の親に該当する場合も true を返す。
+		/// 例 : IdStringContainer( { Parent.Child, } ).Has( Parent ) == true
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool Has( in IdString idString )
+		{
+			UpdateParentCount();
 
-		//public bool Has( in IdString idString )
-		//{
-		//	//return 
-		//}
+			return mCounter.ContainsKey( idString )
+				|| mImplicitCounter.ContainsKey( idString );
+		}
+
+		/// <summary>
+		/// 指定の値を直接保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値を直接保持していれば true を返す。
+		/// 保持している値の親の値は考慮しない。
+		/// 例 : IdStringContainer( { Parent.Child, } ).HasExact( Parent ) == false
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool HasExact( in IdString idString )
+		{
+			UpdateParentCount();
+
+			return mCounter.ContainsKey( idString );
+		}
+		
+		/// <summary>
+		/// 指定の値のいずれかを保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値を一つでも保持していれば true を返す。
+		/// 直接保持している値の他、保持している値の親に該当する場合も true を返す。
+		/// 例 : IdStringContainer( { Parent.Child1, Parent.Child2, } ).HasAny( { Parent.Child2, Parent.Child3 } ) == true
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool HasAny( in IdStringContainer other )
+		{
+			UpdateParentCount();
+
+			foreach( var idString in other.mList )
+			{
+				if( mCounter.ContainsKey( idString )
+				 || mImplicitCounter.ContainsKey( idString )
+				){ return true; }
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// 指定の値のいずれかを直接保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値を一つでも直接保持していれば true を返す。
+		/// 保持している値の親の値は考慮しない。
+		/// 例 : IdStringContainer( { Parent.Child1, Parent.Child2, } ).HasAnyExact( { Parent.Child4, Parent } ) == false
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool HasAnyExact( in IdStringContainer other )
+		{
+			UpdateParentCount();
+
+			foreach( var idString in other.mList )
+			{
+				if( mCounter.ContainsKey( idString )){ return true; }
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// 指定のすべての値を保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値をすべて保持していれば true を返す。
+		/// 直接保持している値の他、保持している値の親に該当する場合も true を返す。
+		/// 例 : IdStringContainer( { Parent.Child1, Parent.Child2, } ).HasAll( { Parent.Child1, Parent } ) == true
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool HasAll( in IdStringContainer other )
+		{
+			UpdateParentCount();
+
+			foreach( var idString in other.mList )
+			{
+				if( !mCounter.ContainsKey( idString )
+				 && !mImplicitCounter.ContainsKey( idString )
+				){ return false; }
+			}
+			return true;
+			
+		}
+		/// <summary>
+		/// 指定のすべての値を直接保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値をすべて直接保持していれば true を返す。
+		/// 保持している値の親の値は考慮しない。
+		/// 例 : IdStringContainer( { Parent.Child1, Parent.Child2, } ).HasAllExact( { Parent.Child1, Parent } ) == false
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool HasAllExact( in IdStringContainer other )
+		{
+			UpdateParentCount();
+
+			foreach( var idString in other.mList )
+			{
+				if( !mCounter.ContainsKey( idString )){ return false; }
+			}
+			return true;
+			
+		}
+		
+
 
 
 		private void OnTagChanged( in IdString idString )
@@ -214,6 +330,18 @@ namespace Ptk.IdStrings
 			{
 				mCounter.TryGetValue( idString, out var count );
 				mCounter[idString] = count + 1;
+			}
+
+			mImplicitCounter.Clear();
+			foreach ( var idString in mList )
+			{
+				var attrData = idString.AttrData;
+				if( attrData == null ){ continue; }
+				foreach( var parent in attrData.ParentList )
+				{
+					mImplicitCounter.TryGetValue( parent, out var count );
+					mImplicitCounter[parent] = count + 1;
+				}
 			}
 		}
 
