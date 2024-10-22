@@ -8,11 +8,11 @@ namespace Ptk.IdStrings
 	/// IdString
 	/// </summary>
 	/// <remarks>
-	/// string ’è”‚ğ int Œ^’è”‚ÌƒRƒXƒg‚Åˆµ‚¤ structB
-	/// IdString Attribute ‚Å•¶š—ñ‚ğ’è‹`‚·‚é–‚Å Domain Load Œã‚É‚Í‚»‚Ì•¶š—ñ‚ğ int Œ^‚Ì ID ‚Æ‚µ‚Äˆµ‚¤–‚ª‰Â”\‚É‚È‚éB
-	/// Serialize ‚Í string ‚ÅŠO•”•Û‘¶‚ğs‚¢ADeserialize ‚Í•¶š—ñŒŸõ‚Å ID ‚É•ÏŠ·‚³‚ê‚éB
-	/// ‚Ü‚½ƒlƒXƒg‚µ‚½ static field ‚Æ‚µ‚Ä‘®«‚ğ’è‹`‚·‚é–‚ÅŠK‘w•\Œ»‚à‰Â”\B
-	/// •¶š—ñ’è”‚â—ñ‹“Œ^‚Ì‘ã‘Ö‚È‚Ç•L‚¢—p“r‚Åg—p‰Â”\B
+	/// string å®šæ•°ã‚’ int å‹å®šæ•°ã®ã‚³ã‚¹ãƒˆã§æ‰±ã† structã€‚
+	/// IdString Attribute ã§æ–‡å­—åˆ—ã‚’å®šç¾©ã™ã‚‹äº‹ã§ Domain Load å¾Œã«ã¯ãã®æ–‡å­—åˆ—ã‚’ int å‹ã® ID ã¨ã—ã¦æ‰±ã†äº‹ãŒå¯èƒ½ã«ãªã‚‹ã€‚
+	/// Serialize æ™‚ã¯ string ã§å¤–éƒ¨ä¿å­˜ã‚’è¡Œã„ã€Deserialize æ™‚ã¯æ–‡å­—åˆ—æ¤œç´¢ã§ ID ã«å¤‰æ›ã•ã‚Œã‚‹ã€‚
+	/// ã¾ãŸãƒã‚¹ãƒˆã—ãŸ static field ã¨ã—ã¦å±æ€§ã‚’å®šç¾©ã™ã‚‹äº‹ã§éšå±¤è¡¨ç¾ã‚‚å¯èƒ½ã€‚
+	/// æ–‡å­—åˆ—å®šæ•°ã‚„åˆ—æŒ™å‹ã®ä»£æ›¿ãªã©å¹…åºƒã„ç”¨é€”ã§ä½¿ç”¨å¯èƒ½ã€‚
 	/// </remarks>
 	[Serializable]
 	public struct IdString : IEquatable< IdString >, ISerializationCallbackReceiver
@@ -26,7 +26,7 @@ namespace Ptk.IdStrings
 		/// Full Name 
 		/// </summary>
 		/// <remarks>
-		/// Serialize ‘ÎÛ‚Ì•¶š—ñB
+		/// Serialize å¯¾è±¡ã®æ–‡å­—åˆ—ã€‚
 		/// </remarks>
 		public string FullName => mFullName;
 
@@ -34,9 +34,9 @@ namespace Ptk.IdStrings
 		/// Id
 		/// </summary>
 		/// <remarks>
-		/// IdStringManager “à•”‚Ì“o˜^ IdB
-		/// “™‰¿”äŠr‚È‚Ç‚Ég—p‚³‚ê‚éB
-		/// ’l‚Í Domain Reload ‚Ì‚½‚Ñ‚É•ÏX‚³‚ê‚é‚½‚ß‚±‚ê‚ğ•Û‘¶‚µ‚Äg—p‚µ‚È‚¢‚±‚ÆB
+		/// IdStringManager å†…éƒ¨ã®ç™»éŒ² Idã€‚
+		/// ç­‰ä¾¡æ¯”è¼ƒãªã©ã«ä½¿ç”¨ã•ã‚Œã‚‹ã€‚
+		/// å€¤ã¯ Domain Reload ã®ãŸã³ã«å¤‰æ›´ã•ã‚Œã‚‹ãŸã‚ã“ã‚Œã‚’ä¿å­˜ã—ã¦ä½¿ç”¨ã—ãªã„ã“ã¨ã€‚
 		/// </remarks>
 		internal int Id => mId;
 
@@ -46,10 +46,10 @@ namespace Ptk.IdStrings
 		internal IdStringAttrData AttrData => IdStringManager.GetAttrData( this );
 
 		/// <summary>
-		/// —v‘f–¼
+		/// è¦ç´ å
 		/// </summary>
 		/// <remarks>
-		/// FullName ‚©‚ç ParentPath ‚ğœ‚¢‚½•¶š—ñB
+		/// FullName ã‹ã‚‰ ParentPath ã‚’é™¤ã„ãŸæ–‡å­—åˆ—ã€‚
 		/// </remarks>
 		public string ElementName
 		{
@@ -61,7 +61,7 @@ namespace Ptk.IdStrings
 		}
 
 		/// <summary>
-		/// ŠK‘wƒŒƒxƒ‹
+		/// éšå±¤ãƒ¬ãƒ™ãƒ«
 		/// </summary>
 		public int HierarchyLevel
 		{
@@ -73,7 +73,7 @@ namespace Ptk.IdStrings
 		}
 
 		/// <summary>
-		/// à–¾
+		/// èª¬æ˜
 		/// </summary>
 		public string Description
 		{
@@ -85,87 +85,87 @@ namespace Ptk.IdStrings
 		}
 
 		/// <summary>
-		/// —LŒø’l‚©B
+		/// æœ‰åŠ¹å€¤ã‹ã€‚
 		/// </summary>
 		/// <remarks>
-		/// IdString.None ‚ ‚é‚¢‚Í Missing ‚Ìê‡‚Í false
+		/// IdString.None ã‚ã‚‹ã„ã¯ Missing ã®å ´åˆã¯ false
 		/// </remarks>
 		public bool IsValid => this != None;
 
 
 		/// <summary>
-		/// w’è—v‘f‚Ìq‚©‚ğ”»’è
+		/// æŒ‡å®šè¦ç´ ã®å­ã‹ã‚’åˆ¤å®š
 		/// </summary>
-		/// <returns> e‚ª parent ‚Ìê‡ true </returns>
+		/// <returns> è¦ªãŒ parent ã®å ´åˆ true </returns>
 		public bool IsChildOf( in IdString parent )
 		{
 			return IdStringManager.IsChildOf( this, parent );
 		}
 		
 		/// <summary>
-		/// w’è—v‘f‚Ìq‘·‚©‚ğ”»’è
+		/// æŒ‡å®šè¦ç´ ã®å­å­«ã‹ã‚’åˆ¤å®š
 		/// </summary>
-		/// <returns> ‘cæ‚É ancestor ‚ªŠÜ‚Ü‚ê‚éê‡ true </returns>
+		/// <returns> ç¥–å…ˆã« ancestor ãŒå«ã¾ã‚Œã‚‹å ´åˆ true </returns>
 		public bool IsDescendantOf( in IdString ancestor )
 		{
 			return IdStringManager.IsDescendantOf( this, ancestor );
 		}
 
 		/// <summary>
-		/// •¶š—ñ‚©‚ç IdString ‚ğæ“¾
+		/// æ–‡å­—åˆ—ã‹ã‚‰ IdString ã‚’å–å¾—
 		/// </summary>
-		/// <param name="stringValue"> FullName •¶š—ñ </param>
-		/// <returns> “o˜^Ï IdStringB‚È‚¢ê‡‚Í IdString.None ‚ğ•Ô‚µ Warning Log ‚ğo—Í‚·‚éB </returns>
+		/// <param name="stringValue"> FullName æ–‡å­—åˆ— </param>
+		/// <returns> ç™»éŒ²æ¸ˆ IdStringã€‚ãªã„å ´åˆã¯ IdString.None ã‚’è¿”ã— Warning Log ã‚’å‡ºåŠ›ã™ã‚‹ã€‚ </returns>
 		static public IdString Get( string stringValue ) => IdStringManager.GetByName( stringValue );
 
 		/// <summary>
-		/// •¶š—ñ‚©‚ç IdString ‚ğæ“¾
+		/// æ–‡å­—åˆ—ã‹ã‚‰ IdString ã‚’å–å¾—
 		/// </summary>
-		/// <param name="stringValue"> FullName •¶š—ñ </param>
-		/// <param name="result"> “o˜^Ï IdStringB‚È‚¢ê‡‚Í IdString.NoneB </param>
-		/// <returns> “o˜^Ï IdString ‚ªŒ©‚Â‚©‚Á‚½ê‡ trueB </returns>
+		/// <param name="stringValue"> FullName æ–‡å­—åˆ— </param>
+		/// <param name="result"> ç™»éŒ²æ¸ˆ IdStringã€‚ãªã„å ´åˆã¯ IdString.Noneã€‚ </param>
+		/// <returns> ç™»éŒ²æ¸ˆ IdString ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ trueã€‚ </returns>
 		static public bool TryGetByName( string stringValue, out IdString result ) => IdStringManager.TryGetByName( stringValue, out result );
 		
 		/// <summary>
-		/// Type ‚©‚ç IdString ‚ğæ“¾
+		/// Type ã‹ã‚‰ IdString ã‚’å–å¾—
 		/// </summary>
 		/// <remarks>
-		/// IdStringDefineMember Attribute ‚ğ•t—^‚µ‚½ Type ‚Å’è‹`‚µ‚½ IdString ‚ğæ“¾‚·‚éB
+		/// IdStringDefineMember Attribute ã‚’ä»˜ä¸ã—ãŸ Type ã§å®šç¾©ã—ãŸ IdString ã‚’å–å¾—ã™ã‚‹ã€‚
 		/// </remarks>
-		/// <typeparam name="T"> IdStringDefineMember ‚ğ•t—^‚µ‚½Type </typeparam>
-		/// <returns> “o˜^Ï IdStringB‚È‚¢ê‡‚Í IdString.None ‚ğ•Ô‚µ Warning Log ‚ğo—Í‚·‚éB </returns>
+		/// <typeparam name="T"> IdStringDefineMember ã‚’ä»˜ä¸ã—ãŸType </typeparam>
+		/// <returns> ç™»éŒ²æ¸ˆ IdStringã€‚ãªã„å ´åˆã¯ IdString.None ã‚’è¿”ã— Warning Log ã‚’å‡ºåŠ›ã™ã‚‹ã€‚ </returns>
 		static public IdString Get< T >() => IdStringManager.GetByType< T >();
 		
 		/// <summary>
-		/// Type ‚©‚ç IdString ‚ğæ“¾
+		/// Type ã‹ã‚‰ IdString ã‚’å–å¾—
 		/// </summary>
 		/// <remarks>
-		/// IdStringDefineMember Attribute ‚ğ•t—^‚µ‚½ Type ‚Å’è‹`‚µ‚½ IdString ‚ğæ“¾‚·‚éB
+		/// IdStringDefineMember Attribute ã‚’ä»˜ä¸ã—ãŸ Type ã§å®šç¾©ã—ãŸ IdString ã‚’å–å¾—ã™ã‚‹ã€‚
 		/// </remarks>
-		/// <param name="type"> IdStringDefineMember ‚ğ•t—^‚µ‚½Type </param>
-		/// <returns> “o˜^Ï IdStringB‚È‚¢ê‡‚Í IdString.None ‚ğ•Ô‚µ Warning Log ‚ğo—Í‚·‚éB </returns>
+		/// <param name="type"> IdStringDefineMember ã‚’ä»˜ä¸ã—ãŸType </param>
+		/// <returns> ç™»éŒ²æ¸ˆ IdStringã€‚ãªã„å ´åˆã¯ IdString.None ã‚’è¿”ã— Warning Log ã‚’å‡ºåŠ›ã™ã‚‹ã€‚ </returns>
 		static public IdString Get( Type type ) => IdStringManager.GetByType( type );
 
 		/// <summary>
-		/// Type ‚©‚ç IdString ‚ğæ“¾
+		/// Type ã‹ã‚‰ IdString ã‚’å–å¾—
 		/// </summary>
 		/// <remarks>
-		/// IdStringDefineMember Attribute ‚ğ•t—^‚µ‚½ Type ‚Å’è‹`‚µ‚½ IdString ‚ğæ“¾‚·‚éB
+		/// IdStringDefineMember Attribute ã‚’ä»˜ä¸ã—ãŸ Type ã§å®šç¾©ã—ãŸ IdString ã‚’å–å¾—ã™ã‚‹ã€‚
 		/// </remarks>
-		/// <typeparam name="T"> IdStringDefineMember ‚ğ•t—^‚µ‚½Type </typeparam>
-		/// <param name="result"> “o˜^Ï IdStringB‚È‚¢ê‡‚Í IdString.NoneB </param>
-		/// <returns> “o˜^Ï IdString ‚ªŒ©‚Â‚©‚Á‚½ê‡ trueB </returns>
+		/// <typeparam name="T"> IdStringDefineMember ã‚’ä»˜ä¸ã—ãŸType </typeparam>
+		/// <param name="result"> ç™»éŒ²æ¸ˆ IdStringã€‚ãªã„å ´åˆã¯ IdString.Noneã€‚ </param>
+		/// <returns> ç™»éŒ²æ¸ˆ IdString ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ trueã€‚ </returns>
 		static public bool TryGetByType< T >( out IdString result ) => IdStringManager.TryGetByType< T >( out result );
 
 		/// <summary>
-		/// Type ‚©‚ç IdString ‚ğæ“¾
+		/// Type ã‹ã‚‰ IdString ã‚’å–å¾—
 		/// </summary>
 		/// <remarks>
-		/// IdStringDefineMember Attribute ‚ğ•t—^‚µ‚½ Type ‚Å’è‹`‚µ‚½ IdString ‚ğæ“¾‚·‚éB
+		/// IdStringDefineMember Attribute ã‚’ä»˜ä¸ã—ãŸ Type ã§å®šç¾©ã—ãŸ IdString ã‚’å–å¾—ã™ã‚‹ã€‚
 		/// </remarks>
-		/// <param name="type"> IdStringDefineMember ‚ğ•t—^‚µ‚½Type </param>
-		/// <param name="result"> “o˜^Ï IdStringB‚È‚¢ê‡‚Í IdString.NoneB </param>
-		/// <returns> “o˜^Ï IdString ‚ªŒ©‚Â‚©‚Á‚½ê‡ trueB </returns>
+		/// <param name="type"> IdStringDefineMember ã‚’ä»˜ä¸ã—ãŸType </param>
+		/// <param name="result"> ç™»éŒ²æ¸ˆ IdStringã€‚ãªã„å ´åˆã¯ IdString.Noneã€‚ </param>
+		/// <returns> ç™»éŒ²æ¸ˆ IdString ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ trueã€‚ </returns>
 		static public bool TryGetByType( Type type, out IdString result ) => IdStringManager.TryGetByType( type, out result );
 
 

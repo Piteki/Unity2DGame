@@ -20,9 +20,9 @@ namespace Ptk.IdStrings
 		[SerializeField]
 		private List< IdString > mList = new( ContainerDefaultCapacity );
 
-		private Dictionary<IdString, int> mCounter;
+		private Dictionary<IdString, int> mCounter = new( ContainerDefaultCapacity );
 
-		private Dictionary<IdString, int> mImplicitCounter;
+		private Dictionary<IdString, int> mImplicitCounter = new( ContainerDefaultCapacity );
 
 		//private List< IdString > mTmp = new( ContainerDefaultCapacity );
 
@@ -36,10 +36,10 @@ namespace Ptk.IdStrings
 		/// </summary>
 		/// <param name="idString"></param>
 		/// <returns> 登録時 true。既に登録済の場合 false </returns>
-		public bool AddLastUnique( in IdString idString )
+		public bool AddUnique( in IdString idString )
 		{
 			if( mList.Contains( idString ) ) { return false; }
-			AddLast( idString );
+			Add( idString );
 			return true;
 		}
 
@@ -50,7 +50,7 @@ namespace Ptk.IdStrings
 		/// 既に登録済の場合も登録される。
 		/// </remarks>
 		/// <param name="idString"></param>
-		public void AddLast( in IdString idString )
+		public void Add( in IdString idString )
 		{
 			mList.Add( idString );
 			IsDirty = true;
@@ -112,7 +112,7 @@ namespace Ptk.IdStrings
 		/// 指定要素を先頭から1件削除
 		/// </summary>
 		/// <returns> 削除時 true </returns>
-		public bool RemoveFirst( in IdString idString )
+		public bool Remove( in IdString idString )
 		{ 
 			bool ret = mList.Remove( idString ); 
 			if( ret )
@@ -126,7 +126,7 @@ namespace Ptk.IdStrings
 		/// 指定要素を先頭から削除
 		/// </summary>
 		/// <returns> 削除要素数 </returns>
-		public int RemoveFirst( in IdString idString, int count )
+		public int Remove( in IdString idString, int count )
 		{
 			int ret = 0;
 			for( int i = 0; i < count; ++i )
