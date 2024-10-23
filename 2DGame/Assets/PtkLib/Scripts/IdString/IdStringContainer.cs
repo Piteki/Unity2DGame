@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -13,23 +15,89 @@ namespace Ptk.IdStrings
 	/// 複数の IdString を格納するクラス
 	/// </remarks>
 	[Serializable]
-	public class IdStringContainer : IEnumerable< IdString >
+	public class IdStringContainer : IEnumerable< IdString >, ICollection< IdString >
 	{
-		public const int ContainerDefaultCapacity = 64;
+		public const int ContainerDefaultCapacity = 32;
 
 		[SerializeField]
-		private List< IdString > mList = new( ContainerDefaultCapacity );
+		private List< IdString > mList;
 
-		private Dictionary<IdString, int> mCounter = new( ContainerDefaultCapacity );
+		private Dictionary<IdString, int> mCounter;
+		private Dictionary<IdString, int> mImplicitCounter;
 
-		private Dictionary<IdString, int> mImplicitCounter = new( ContainerDefaultCapacity );
-
-		//private List< IdString > mTmp = new( ContainerDefaultCapacity );
 
 		public bool IsDirty{ get; private set; }
 
 		public int Count => mList.Count;
 
+		public bool IsReadOnly => false;
+
+		public IdStringContainer()
+		{
+			mList = new( ContainerDefaultCapacity );
+			mCounter = new( ContainerDefaultCapacity );
+			mImplicitCounter = new( ContainerDefaultCapacity );
+		}
+
+		public IdStringContainer( int capacity )
+		{
+			if( capacity <= 0 )
+			{
+				capacity = ContainerDefaultCapacity;
+			}
+			mList = new( capacity );
+			mCounter = new( capacity );
+			mImplicitCounter = new( capacity );
+		}
+
+		public IdStringContainer( ICollection< IdString > collection )
+			: this( collection == null ? 0 : collection.Count, collection )
+		{
+		}
+
+		public IdStringContainer( int capacity, ICollection< IdString > collection )
+			: this( capacity )
+		{
+			if( collection == null )
+			{
+				return;
+			}
+			mList.AddRange( collection );
+		}
+
+
+		/// <summary>
+		/// すべて削除
+		/// </summary>
+		public void Clear()
+		{
+			List< IdString > tmpList = 0 < mList.Count ? new( mList ) : null;
+
+			mList.Clear();
+			mCounter.Clear();
+			mImplicitCounter.Clear();
+
+			if( tmpList != null )
+			{
+				foreach( var idString in tmpList )
+				{
+					OnElementChanged( idString );
+				}
+			}
+		}
+
+		/// <summary>
+		/// コレクションを末尾に登録
+		/// </summary>
+		/// <param name="collection"></param>
+		public void AddRange( IEnumerable< IdString > collection )
+		{
+			mList.AddRange( collection );
+			foreach( var idString in collection )
+			{
+				OnElementChanged( idString );
+			}
+		}
 
 		/// <summary>
 		/// 一意な値を末尾に登録
@@ -53,9 +121,9 @@ namespace Ptk.IdStrings
 		public void Add( in IdString idString )
 		{
 			mList.Add( idString );
-			IsDirty = true;
-			OnTagChanged( idString );
+			OnElementChanged( idString );
 		}
+
 
 		/// <summary>
 		/// 一意な値を先頭に登録
@@ -79,7 +147,7 @@ namespace Ptk.IdStrings
 		public void AddFirst( in IdString idString )
 		{
 			mList.Insert( 0, idString );
-			OnTagChanged( idString );
+			OnElementChanged( idString );
 		}
 
 		/// <summary>
@@ -105,7 +173,7 @@ namespace Ptk.IdStrings
 		{
 			index = Mathf.Clamp( index, 0, mList.Count );
 			mList.Insert( index, idString );
-			OnTagChanged( idString );
+			OnElementChanged( idString );
 		}
 
 		/// <summary>
@@ -117,7 +185,7 @@ namespace Ptk.IdStrings
 			bool ret = mList.Remove( idString ); 
 			if( ret )
 			{
-				OnTagChanged( idString );
+				OnElementChanged( idString );
 			}
 			return ret;
 		}
@@ -136,7 +204,7 @@ namespace Ptk.IdStrings
 			}
 			if( 0 < ret )
 			{
-				OnTagChanged( idString );
+				OnElementChanged( idString );
 			}
 
 			return ret; 
@@ -166,7 +234,7 @@ namespace Ptk.IdStrings
 			}
 			if( 0 < ret )
 			{
-				OnTagChanged( idString );
+				OnElementChanged( idString );
 			}
 			return ret; 
 		}
@@ -226,6 +294,20 @@ namespace Ptk.IdStrings
 
 			return mCounter.ContainsKey( idString );
 		}
+
+		/// <summary>
+		/// 指定の値を直接保持しているか
+		/// </summary>
+		/// <remarks>
+		/// 指定の値を直接保持していれば true を返す。
+		/// HasExact() と等価。
+		/// </remarks>
+		/// <returns> 値発見時 true </returns>
+		public bool Contains( IdString idString )
+		{
+			return HasExact( idString );
+		}
+
 		
 		/// <summary>
 		/// 指定の値のいずれかを保持しているか
@@ -315,7 +397,7 @@ namespace Ptk.IdStrings
 
 
 
-		private void OnTagChanged( in IdString idString )
+		private void OnElementChanged( in IdString idString )
 		{
 			IsDirty = true;
 		}
@@ -349,6 +431,35 @@ namespace Ptk.IdStrings
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator(){ return this.GetEnumerator(); }
 		public IEnumerator< IdString > GetEnumerator() { return mList.GetEnumerator(); }
 		#endregion
+
+		#region ICollection 
+		void ICollection< IdString >.Add( IdString idString )
+		{
+			Add( idString );
+		}
+
+		bool ICollection< IdString >.Remove( IdString idString )
+		{
+			return Remove( idString );
+		}
+		bool ICollection< IdString >.Contains( IdString idString )
+		{
+			return HasExact( idString );
+		}
+
+		public void CopyTo( IdString[] array, int arrayIndex )
+		{
+			foreach( var idString in mList )
+			{
+				array[arrayIndex] = idString;
+				++arrayIndex;
+			}
+		}
+
+
+		#endregion
+
+
 
 	}
 }

@@ -99,6 +99,37 @@ namespace Ptk.IdStrings.Editor
 			container.Remove( IdStringTestClass.A3.B2 );
 			Assert.IsFalse( container.HasExact( IdStringTestClass.A3.B1 ) );
 			Assert.IsFalse( container.Has( IdString.Get(typeof(IdStringTestClass.A3)) ) );
+
+
+			var containerB = new IdStringContainer(
+			new IdString[]{
+				IdStringTestClass.A3.B2,
+				IdStringTestClass.A3.B1,
+			});
+
+			container.Add( IdStringTestClass.A3.B2 );
+			container.Add( IdStringTestClass.A3.B1 );
+
+			Assert.IsTrue( container.HasAll( containerB ) );
+			Assert.IsTrue( container.HasAllExact( containerB ) );
+
+			containerB.Add( IdString.Get(typeof(IdStringTestClass.A3)) );
+
+			Assert.IsTrue( container.HasAll( containerB ) );
+			Assert.IsFalse( container.HasAllExact( containerB ) );
+
+
+			container.Remove( IdStringTestClass.A3.B1 );
+			Assert.IsFalse( container.HasAll( containerB ) );
+			Assert.IsFalse( container.HasAllExact( containerB ) );
+
+			Assert.IsTrue( container.HasAny( containerB ) );
+			Assert.IsTrue( container.HasAnyExact( containerB ) );
+
+			containerB.Remove( IdStringTestClass.A3.B2 );
+			Assert.IsTrue( container.HasAny( containerB ) );
+			Assert.IsFalse( container.HasAnyExact( containerB ) );
+
 		}
 	}
 	
