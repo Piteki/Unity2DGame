@@ -219,6 +219,7 @@ namespace Ptk.IdStrings
 			return !self.Equals( other );
 		}
 
+	#region ISerializationCallbackReceiver
 		void ISerializationCallbackReceiver.OnAfterDeserialize()
 		{
 			var idString = IdStringManager.GetByName( mFullName );
@@ -236,6 +237,7 @@ namespace Ptk.IdStrings
 		void ISerializationCallbackReceiver.OnBeforeSerialize()
 		{
 		}
+	#endregion
 
 	}
 

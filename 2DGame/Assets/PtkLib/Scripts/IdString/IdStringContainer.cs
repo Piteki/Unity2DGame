@@ -15,7 +15,7 @@ namespace Ptk.IdStrings
 	/// 複数の IdString を格納するクラス
 	/// </remarks>
 	[Serializable]
-	public class IdStringContainer : IEnumerable< IdString >, ICollection< IdString >
+	public class IdStringContainer : IEnumerable< IdString >, ICollection< IdString >, ISerializationCallbackReceiver, IDisposable
 	{
 		public const int ContainerDefaultCapacity = 32;
 
@@ -25,18 +25,50 @@ namespace Ptk.IdStrings
 		private Dictionary<IdString, int> mCounter;
 		private Dictionary<IdString, int> mImplicitCounter;
 
+		/// <summary>
+		/// 要素変更通知
+		/// </summary>
+		/// <remarks>
+		/// 要素の追加または削除があった際に呼び出される。
+		/// bool は 追加時 true, 削除時 false が渡される
+		/// </remarks>
+		public event Action< IdString, bool > EventElementChanged;
 
+		/// <summary>
+		/// データ変更フラグ
+		/// </summary>
+		/// <remarks>
+		/// フラグが true の場合、クラス内部のカウンタは未更新状態。
+		/// Has 系のメソッドが呼ばれる UpdateParentCount を手動で呼ぶ事で最新状態に更新される。
+		/// </remarks>
 		public bool IsDirty{ get; private set; }
 
+		/// <summary>
+		/// Count 
+		/// </summary>
 		public int Count => mList.Count;
 
-		public bool IsReadOnly => false;
+		/// <summary>
+		/// インデクサ
+		/// </summary>
+		/// <exception cref="IndexOutOfRangeException"></exception>
+		public IdString this[ int idx ]
+		{
+			get { return mList[ idx ]; }
+			set 
+			{ 
+				var oldValue = mList[ idx ];
+				mList[ idx ] = value; 
+				OnElementChanged( oldValue, false ); 
+				OnElementChanged( value, true ); 
+			}
+		}
+
+	#region Constructor ----------------------------------------------------------------------------------------------------
 
 		public IdStringContainer()
+			: this( ContainerDefaultCapacity )
 		{
-			mList = new( ContainerDefaultCapacity );
-			mCounter = new( ContainerDefaultCapacity );
-			mImplicitCounter = new( ContainerDefaultCapacity );
 		}
 
 		public IdStringContainer( int capacity )
@@ -65,6 +97,24 @@ namespace Ptk.IdStrings
 			mList.AddRange( collection );
 		}
 
+	#endregion
+
+	#region Public methods ----------------------------------------------------------------------------------------------------
+
+		/// <summary>
+		/// 破棄
+		/// </summary>
+		/// <remarks>
+		/// Clear() と異なり Tag を保持していても EventElementChanged を発行しない点に注意。
+		/// </remarks>
+		public void Dispose()
+		{
+			EventElementChanged = null;
+
+			mList.Clear();
+			mCounter.Clear();
+			mImplicitCounter.Clear();
+		}
 
 		/// <summary>
 		/// すべて削除
@@ -81,7 +131,7 @@ namespace Ptk.IdStrings
 			{
 				foreach( var idString in tmpList )
 				{
-					OnElementChanged( idString );
+					OnElementChanged( idString, false );
 				}
 			}
 		}
@@ -95,7 +145,7 @@ namespace Ptk.IdStrings
 			mList.AddRange( collection );
 			foreach( var idString in collection )
 			{
-				OnElementChanged( idString );
+				OnElementChanged( idString, true );
 			}
 		}
 
@@ -121,7 +171,7 @@ namespace Ptk.IdStrings
 		public void Add( in IdString idString )
 		{
 			mList.Add( idString );
-			OnElementChanged( idString );
+			OnElementChanged( idString, true );
 		}
 
 
@@ -147,7 +197,7 @@ namespace Ptk.IdStrings
 		public void AddFirst( in IdString idString )
 		{
 			mList.Insert( 0, idString );
-			OnElementChanged( idString );
+			OnElementChanged( idString, true );
 		}
 
 		/// <summary>
@@ -173,7 +223,7 @@ namespace Ptk.IdStrings
 		{
 			index = Mathf.Clamp( index, 0, mList.Count );
 			mList.Insert( index, idString );
-			OnElementChanged( idString );
+			OnElementChanged( idString, true );
 		}
 
 		/// <summary>
@@ -185,7 +235,7 @@ namespace Ptk.IdStrings
 			bool ret = mList.Remove( idString ); 
 			if( ret )
 			{
-				OnElementChanged( idString );
+				OnElementChanged( idString, false );
 			}
 			return ret;
 		}
@@ -204,7 +254,7 @@ namespace Ptk.IdStrings
 			}
 			if( 0 < ret )
 			{
-				OnElementChanged( idString );
+				OnElementChanged( idString, false );
 			}
 
 			return ret; 
@@ -234,7 +284,7 @@ namespace Ptk.IdStrings
 			}
 			if( 0 < ret )
 			{
-				OnElementChanged( idString );
+				OnElementChanged( idString, false );
 			}
 			return ret; 
 		}
@@ -247,8 +297,10 @@ namespace Ptk.IdStrings
 		/// <returns></returns>
 		public bool RemoveAt( int index )
 		{
-			if( index < 0 || mList.Count <= index ) { return false; }
+			if( !IsValidIndex( index ) ) { return false; }
+			var elem = mList[ index ];
 			mList.RemoveAt( index );
+			OnElementChanged( elem, false );
 			return true;
 		}
 
@@ -291,7 +343,6 @@ namespace Ptk.IdStrings
 		public bool HasExact( in IdString idString )
 		{
 			UpdateParentCount();
-
 			return mCounter.ContainsKey( idString );
 		}
 
@@ -394,17 +445,55 @@ namespace Ptk.IdStrings
 			
 		}
 		
-
-
-
-		private void OnElementChanged( in IdString idString )
+		/// <summary>
+		/// 先頭要素を取得
+		/// </summary>
+		public IdString FirstOrDefault()
 		{
-			IsDirty = true;
+			return 0 < mList.Count ? mList[0] : IdString.None;
 		}
 
-		private void UpdateParentCount()
+		/// <summary>
+		/// 末尾要素を取得
+		/// </summary>
+		public IdString LastOrDefault()
 		{
-			if( !IsDirty ){ return; }
+			return 0 < mList.Count ? mList[mList.Count-1] : IdString.None;
+		}
+
+		/// <summary>
+		/// 指定位置要素を取得
+		/// </summary>
+		public IdString ElementAtOrDefault( int idx )
+		{
+			return IsValidIndex(idx) ? mList[idx] : IdString.None;
+		}
+
+		/// <summary>
+		/// インデックスが有効かチェック
+		/// </summary>
+		public bool IsValidIndex( int idx )
+		{
+			return 0 <= idx && idx < mList.Count;
+		}
+
+		
+
+	#endregion
+
+	#region Non Public methods----------------------------------------------------------------------------------------------------
+
+
+		private void OnElementChanged( in IdString idString, bool isAdded )
+		{
+			IsDirty = true;
+
+			EventElementChanged?.Invoke( idString, isAdded );
+		}
+
+		private void UpdateParentCount( bool force = false )
+		{
+			if( !IsDirty && !force ){ return; }
 			IsDirty = false;
 
 			mCounter.Clear();
@@ -427,12 +516,16 @@ namespace Ptk.IdStrings
 			}
 		}
 
-		#region IEnumerable 
+	#endregion
+
+	#region IEnumerable ----------------------------------------------------------------------------------------------------
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator(){ return this.GetEnumerator(); }
 		public IEnumerator< IdString > GetEnumerator() { return mList.GetEnumerator(); }
-		#endregion
+	#endregion
 
-		#region ICollection 
+	#region ICollection 
+		bool ICollection< IdString >.IsReadOnly => false;
+
 		void ICollection< IdString >.Add( IdString idString )
 		{
 			Add( idString );
@@ -455,10 +548,18 @@ namespace Ptk.IdStrings
 				++arrayIndex;
 			}
 		}
+	#endregion
 
+	#region ISerializationCallbackReceiver ----------------------------------------------------------------------------------------------------
+		void ISerializationCallbackReceiver.OnAfterDeserialize()
+		{
+			UpdateParentCount(true);
+		}
 
-		#endregion
-
+		void ISerializationCallbackReceiver.OnBeforeSerialize()
+		{
+		}
+	#endregion
 
 
 	}

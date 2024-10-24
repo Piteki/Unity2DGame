@@ -126,9 +126,24 @@ namespace Ptk.IdStrings.Editor
 			Assert.IsTrue( container.HasAny( containerB ) );
 			Assert.IsTrue( container.HasAnyExact( containerB ) );
 
+			var idStringDeleted = IdString.None;
+			void OnElementChanged( IdString elem, bool isAdded )
+			{
+				 if( isAdded ){ return; }
+				idStringDeleted = elem;
+			}
+			containerB.EventElementChanged += OnElementChanged;
+
 			containerB.Remove( IdStringTestClass.A3.B2 );
+
+			Assert.IsTrue( idStringDeleted == IdStringTestClass.A3.B2 );
+
 			Assert.IsTrue( container.HasAny( containerB ) );
 			Assert.IsFalse( container.HasAnyExact( containerB ) );
+
+			Assert.IsTrue( container.FirstOrDefault() == container[0] );
+			Assert.IsTrue( container.LastOrDefault() == container[container.Count-1] );
+			Assert.IsFalse( container.ElementAtOrDefault(2) == container[1] );
 
 		}
 	}
