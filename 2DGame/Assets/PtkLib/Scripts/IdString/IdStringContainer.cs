@@ -201,6 +201,46 @@ namespace Ptk.IdStrings
 		}
 
 		/// <summary>
+		/// 子要素を追加
+		/// </summary>
+		/// <remarks>
+		/// 指定要素を末端の子要素として末尾に登録する。
+		/// 対象の祖先にあたる要素が既に存在する場合はすべて削除される。
+		/// 対象と同一あるいは対象の子孫にあたる要素が既に存在する場合は対象は登録されない。
+		/// </remarks>
+		/// <returns> 対象を新たに登録した場合は true </returns>
+		public bool AddLeafElement( in IdString idString )
+		{
+			List< IdString > tmpList = null;
+			bool bFind = false;
+			for( int idx = mList.Count -1; 0 <= idx; --idx )
+			{
+				var elem = mList[ idx ];
+				if( idString == elem ){ bFind = true; continue; }
+				if( elem.IsDescendantOf( idString ) ){ bFind = true; continue; }
+				if( idString.IsDescendantOf( elem ) )
+				{
+					if( tmpList == null ){ tmpList = new List< IdString >(); }
+					tmpList.Add( elem );
+					mList.RemoveAt( idx );
+				}
+			}
+			if( !bFind )
+			{
+				mList.Add( idString );
+				OnElementChanged( idString, true );
+			}
+			if( tmpList != null )
+			{
+				foreach( var removeElem in tmpList )
+				{
+					OnElementChanged( removeElem, false );
+				}
+			}
+			return !bFind;
+		}
+
+		/// <summary>
 		/// 一意な値を指定位置に登録
 		/// </summary>
 		/// <param name="idString"></param>

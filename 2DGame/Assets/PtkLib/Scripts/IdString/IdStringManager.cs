@@ -148,7 +148,7 @@ namespace Ptk.IdStrings
 			//var firstElem = attrData.ParentList.FirstOrDefault();
 			var parentList = attrData.ParentList;
 			var firstElem = 0 < parentList.Count ? parentList[ 0 ] : IdString.None;
-			return attrData.ParentList.FirstOrDefault() == firstElem;
+			return parent == firstElem;
 		}
 
 		/// <summary>

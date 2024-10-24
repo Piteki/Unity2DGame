@@ -145,6 +145,23 @@ namespace Ptk.IdStrings.Editor
 			Assert.IsTrue( container.LastOrDefault() == container[container.Count-1] );
 			Assert.IsFalse( container.ElementAtOrDefault(2) == container[1] );
 
+			// TOD
+			container.AddLeafElement( IdStringTestClass.A3.B1 );
+			Assert.IsTrue( container.HasExact( IdStringTestClass.A3.B1 ) );
+			Assert.IsFalse( container.HasExact( IdString.Get(typeof(IdStringTestClass.A3)) ) );
+			container.Add( IdString.Get(typeof(IdStringTestClass.A3)) );
+			container.AddLeafElement( IdString.Get(typeof(IdStringTestClass.A3.B3)) );
+			Assert.IsFalse( container.HasExact( IdString.Get(typeof(IdStringTestClass.A3)) ) );
+			Assert.IsTrue( container.Has( IdString.Get(typeof(IdStringTestClass.A3)) ) );
+			Assert.IsTrue( container.HasExact( IdString.Get(typeof(IdStringTestClass.A3.B3)) ) );
+			container.AddLeafElement( IdStringTestClass.A3.B3.C1 );
+			container.AddLeafElement( IdStringTestClass.A3.B3.C2 );
+			Assert.IsTrue( container.Has( IdString.Get(typeof(IdStringTestClass.A3)) ) );
+			Assert.IsTrue( container.Has( IdString.Get(typeof(IdStringTestClass.A3.B3)) ) );
+			Assert.IsFalse( container.HasExact( IdString.Get(typeof(IdStringTestClass.A3)) ) );
+			Assert.IsFalse( container.HasExact( IdString.Get(typeof(IdStringTestClass.A3.B3)) ) );
+			Assert.IsTrue( container.HasExact( IdStringTestClass.A3.B3.C1 ) );
+			Assert.IsTrue( container.HasExact( IdStringTestClass.A3.B3.C2 ) );
 		}
 	}
 	
